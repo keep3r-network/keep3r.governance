@@ -207,7 +207,10 @@ class Header extends Component {
   }
 
   balancesReturned = () => {
-    this.setState({ rewardAsset: store.getStore('rewardAsset') })
+    this.setState({
+      rewardAsset: store.getStore('rewardAsset'),
+      keeperAsset: store.getStore('keeperAsset')
+    })
   }
 
   gasPricesReturned = () => {
@@ -240,6 +243,7 @@ class Header extends Component {
           </div>
           <div className={ classes.links }>
             { this.renderLink('governance') }
+            { this.renderLink('keep3r') }
           </div>
           <div className={ classes.account }>
             { !account.address &&
@@ -260,7 +264,7 @@ class Header extends Component {
 
   renderAccountInformation = () => {
     const { classes } = this.props
-    const { account, width, rewardAsset } = this.state
+    const { account, width, rewardAsset, keeperAsset } = this.state
 
     var address = null;
     if (account.address) {
@@ -269,6 +273,7 @@ class Header extends Component {
 
     return (
       <div className={ classes.accountDetailsSection }>
+        <Typography className={ classes.accountDetailsBalance } variant='h4'>{ (keeperAsset) ? (keeperAsset.balance + ' ' + keeperAsset.symbol) : '0' }</Typography>
         <Typography className={ classes.accountDetailsBalance } onClick={ this.currencyClicked } variant='h4'>{ (rewardAsset) ? (rewardAsset.balance + ' ' + rewardAsset.symbol) : '0' }</Typography>
         { width > 899 && <Typography className={ classes.accountDetailsAddress } onClick={ this.addressClicked } variant='h4'>{ address } <div className={ classes.connectedDot }></div></Typography> }
         { width <= 899 && <AccountCircleIcon className={ classes.accountIcon } onClick={ this.addressClicked } /> }

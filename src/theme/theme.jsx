@@ -151,12 +151,12 @@ const iswapTheme =  {
         padding: '10px 24px',
         borderWidth: '2px !important'
       },
-      text: {
-        padding: '10px 24px'
-      },
       label: {
         textTransform: 'none',
         fontSize: '1rem'
+      },
+      text: {
+        padding: '0px'
       }
     },
     MuiInputBase: {

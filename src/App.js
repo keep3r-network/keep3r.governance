@@ -18,6 +18,12 @@ import Proposals from './components/proposals';
 import Propose from './components/propose';
 import Proposal from './components/proposal';
 
+import Keeper from './components/keeper';
+import KeeperProfile from './components/keeperProfile';
+
+import JobCreation from './components/jobCreation';
+import Job from './components/job';
+
 import {
   CONNECTION_CONNECTED,
   ACCOUNT_CHANGED,
@@ -170,6 +176,18 @@ class App extends Component {
                 </Route>
                 <Route path="/governance">
                   <Proposals />
+                </Route>
+                <Route path="/keep3r/job/:address">
+                  <Job />
+                </Route>
+                <Route path="/keep3r/job">
+                  <JobCreation />
+                </Route>
+                <Route path="/keep3r/:address">
+                  <KeeperProfile />
+                </Route>
+                <Route path="/keep3r">
+                  <Keeper />
                 </Route>
                 <Route path="/">
                   <Proposals />

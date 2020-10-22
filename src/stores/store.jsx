@@ -31,7 +31,33 @@ import {
   VOTE_FOR,
   VOTE_FOR_RETURNED,
   VOTE_AGAINST,
-  VOTE_AGAINST_RETURNED
+  VOTE_AGAINST_RETURNED,
+  GET_KEEPER,
+  KEEPER_RETURNED,
+  GET_KEEPER_PROFILE,
+  KEEPER_PROFILE_RETURNED,
+  GET_JOBS,
+  JOBS_RETURNED,
+  GET_KEEPERS,
+  KEEPERS_RETURNED,
+  ADD_BOND,
+  ADD_BOND_RETURNED,
+  ACTIVATE_BOND,
+  ACTIVATE_BOND_RETURNED,
+  ADD_JOB,
+  ADD_JOB_RETURNED,
+  GET_JOB_PROFILE,
+  JOB_PROFILE_RETURNED,
+  ADD_LIQUIDITY_TO_JOB,
+  ADD_LIQUIDITY_TO_JOB_RETURNED,
+  APPLY_CREDIT_TO_JOB,
+  APPLY_CREDIT_TO_JOB_RETURNED,
+  REMOVE_LIQUIDITY_FROM_JOB,
+  REMOVE_LIQUIDITY_FROM_JOB_RETURNED,
+  UNBOND_LIQUIDITY_FROM_JOB,
+  UNBOND_LIQUIDITY_FROM_JOB_RETURNED,
+  SLASH,
+  SLASH_RETURNED,
 } from '../constants';
 import Web3 from 'web3';
 
@@ -41,6 +67,7 @@ import { GovernanceABI } from './abi/governanceABI';
 import { LiquidityABI } from './abi/liquidityABI';
 import { RewardsABI } from './abi/rewardsABI';
 import { PoolABI } from './abi/poolABI';
+import { KeeperABI } from './abi/keeperABI';
 
 const rp = require('request-promise');
 
@@ -111,7 +138,35 @@ class Store {
         balance: 0,
         logo: 'LBD-logo.png',
         type: 'reward'
-      }
+      },
+      keeperAsset: {
+        address: config.keeperAddress,
+        abi: KeeperABI,
+        symbol: 'KPR',
+        name: 'Keep3r',
+        decimals: 18,
+        balance: 0,
+        logo: 'KPR-logo.png',
+        type: 'keeper',
+        bonds: 0,
+        pendingBonds: 0,
+        bondings: 0,
+        unbondings: 0,
+        blacklisted: false,
+        disputed: false,
+        lastJob: 0,
+        firstSeen: 0,
+        delegates: false,
+        work: 0,
+        workCompleted: 0,
+        isActive: false
+      },
+      jobs: [
+
+      ],
+      keepers: [
+
+      ]
     }
 
     dispatcher.register(
@@ -156,6 +211,46 @@ class Store {
           case VOTE_AGAINST:
             this.voteAgainst(payload);
             break;
+
+          case GET_KEEPER:
+            this.getKeeper(payload);
+            break;
+          case GET_JOBS:
+            this.getJobs(payload);
+            break;
+          case GET_KEEPERS:
+            this.getKeepers(payload);
+            break;
+          case ADD_BOND:
+            this.addBond(payload);
+            break;
+          case ACTIVATE_BOND:
+            this.activateBond(payload);
+            break;
+          case GET_KEEPER_PROFILE:
+            this.getKeeperProfile(payload);
+            break;
+          case ADD_JOB:
+            this.addJob(payload);
+            break;
+          case GET_JOB_PROFILE:
+            this.getJobProfile(payload);
+            break;
+          case ADD_LIQUIDITY_TO_JOB:
+            this.addLiquidityToJob(payload);
+            break;
+          case REMOVE_LIQUIDITY_FROM_JOB:
+            this.removeLiquidityFromJob(payload);
+            break;
+          case APPLY_CREDIT_TO_JOB:
+            this.applyCreditToJob(payload);
+            break;
+          case UNBOND_LIQUIDITY_FROM_JOB:
+            this.unbondLiquidityFromJob(payload);
+            break;
+          case SLASH:
+            this.slash(payload);
+            break;
           default: {
           }
         }
@@ -179,6 +274,7 @@ class Store {
     let liquidityAsset = store.getStore('liquidityAsset')
     let rewardAsset = store.getStore('rewardAsset')
     let poolAsset = store.getStore('poolAsset')
+    let keeperAsset = store.getStore('keeperAsset')
 
     let assets = [baseAsset, liquidityAsset, rewardAsset, poolAsset]
 
@@ -206,6 +302,7 @@ class Store {
       liquidityAsset = resultAssets[1]
       rewardAsset = resultAssets[2]
       poolAsset = resultAssets[3]
+      keeperAsset = resultAssets[4]
 
       store.setStore({ baseAsset: baseAsset, liquidityAsset: liquidityAsset, rewardAsset: rewardAsset,  poolAsset: poolAsset })
       return emitter.emit(BALANCES_RETURNED)
@@ -879,6 +976,560 @@ class Store {
     const governanceContract = new web3.eth.Contract(GovernanceABI, config.governanceAddress)
 
     governanceContract.methods.castVote(proposal.id, false).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+      .on('transactionHash', function(hash){
+        emitter.emit(TX_SUBMITTED, hash)
+        callback(null, hash)
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        if(confirmationNumber === 2) {
+          emitter.emit(TX_CONFIRMED, receipt.transactionHash)
+        }
+      })
+      .on('receipt', function(receipt){
+        emitter.emit(TX_RECEIPT, receipt.transactionHash)
+      })
+      .on('error', function(error) {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+      .catch((error) => {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+  }
+
+
+  getKeeper = async (payload) => {
+    const account = store.getStore('account')
+    let keeperAsset = store.getStore('keeperAsset')
+    const web3 = await this._getWeb3Provider()
+    if(!web3) {
+      emitter.emit(KEEPER_RETURNED)
+      return
+    }
+
+    try {
+
+      keeperAsset = await this._getKeeperData(web3, keeperAsset, account.address)
+
+      store.setStore({ keeperAsset: keeperAsset })
+
+      emitter.emit(KEEPER_RETURNED)
+
+    } catch(ex) {
+      emitter.emit(SNACKBAR_ERROR, ex)
+      return emitter.emit(ERROR, GET_KEEPER)
+    }
+  }
+
+  _getKeeperData = async (web3, keeperAsset, address) => {
+
+    try {
+      const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+      let balance = await keeperContract.methods.balanceOf(address).call({ })
+      balance = balance/10**keeperAsset.decimals
+      keeperAsset.balance = balance
+
+      let bonds = await keeperContract.methods.bonds(address, keeperAsset.address).call({ })
+      bonds = bonds/10**keeperAsset.decimals
+      keeperAsset.bonds = bonds
+
+      let pendingBonds = await keeperContract.methods.pendingbonds(address, keeperAsset.address).call({ })
+      pendingBonds = pendingBonds/10**keeperAsset.decimals
+      keeperAsset.pendingBonds = pendingBonds
+
+      keeperAsset.bondings = await keeperContract.methods.bondings(address, keeperAsset.address).call({ })
+      keeperAsset.unbondings = await keeperContract.methods.unbondings(address, keeperAsset.address).call({ })
+
+      keeperAsset.blacklisted = await keeperContract.methods.blacklist(address).call({ })
+      keeperAsset.disputed = await keeperContract.methods.disputes(address).call({ })
+      keeperAsset.firstSeen = await keeperContract.methods.firstSeen(address).call({ })
+      keeperAsset.delegates = await keeperContract.methods.delegates(address).call({ })
+
+      keeperAsset.work = await keeperContract.methods.work(address).call({ })
+      keeperAsset.workCompleted = await keeperContract.methods.workCompleted(address).call({ })
+
+      keeperAsset.lastJob = await keeperContract.methods.lastJob(address).call({ })
+
+      keeperAsset.isActive = await keeperContract.methods.keepers(address).call({ })
+
+      return keeperAsset
+    } catch(ex) {
+      console.log(ex)
+      return {}
+    }
+  }
+
+  getJobs = async (payload) => {
+    const account = store.getStore('account')
+    const web3 = await this._getWeb3Provider()
+
+    if(!web3) {
+      emitter.emit(JOBS_RETURNED)
+      return
+    }
+
+    try {
+      const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+      const jobs = await keeperContract.methods.getJobs().call({ from: account.address });
+
+      store.setStore({ jobs: jobs })
+      emitter.emit(JOBS_RETURNED)
+    } catch(ex) {
+      emitter.emit(SNACKBAR_ERROR, ex)
+      return emitter.emit(ERROR, GET_JOBS)
+    }
+  }
+
+  getKeepers = async (payload) => {
+    const account = store.getStore('account')
+    const web3 = await this._getWeb3Provider()
+    if(!web3) {
+      emitter.emit(KEEPERS_RETURNED)
+      return
+    }
+
+    try {
+      const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+      const keepers = await keeperContract.methods.getKeepers().call({ from: account.address })
+
+      store.setStore({ keepers: keepers })
+
+      emitter.emit(KEEPERS_RETURNED)
+    } catch(ex) {
+      emitter.emit(SNACKBAR_ERROR, ex)
+      return emitter.emit(ERROR, GET_KEEPERS)
+    }
+  }
+
+  addBond = (payload) => {
+    const account = store.getStore('account')
+    const { amount } = payload.content
+
+    this._callBond(amount, account, (err, res) => {
+      if(err) {
+        emitter.emit(SNACKBAR_ERROR, err);
+        return emitter.emit(ERROR, ADD_BOND);
+      }
+
+      return emitter.emit(ADD_BOND_RETURNED, res)
+    })
+  }
+
+  _callBond = async (amount, account, callback) => {
+    const web3 = await this._getWeb3Provider();
+    const keeperAsset = store.getStore('keeperAsset')
+
+    const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+    let amountToSend = (amount*10**keeperAsset.decimals).toFixed(0);
+
+    keeperContract.methods.bond(keeperAsset.address, amountToSend).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+      .on('transactionHash', function(hash){
+        emitter.emit(TX_SUBMITTED, hash)
+        callback(null, hash)
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        if(confirmationNumber === 2) {
+          emitter.emit(TX_CONFIRMED, receipt.transactionHash)
+        }
+      })
+      .on('receipt', function(receipt){
+        emitter.emit(TX_RECEIPT, receipt.transactionHash)
+      })
+      .on('error', function(error) {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+      .catch((error) => {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+  }
+
+  activateBond = (payload) => {
+    const account = store.getStore('account')
+
+    this._callActivate(account, (err, res) => {
+      if(err) {
+        emitter.emit(SNACKBAR_ERROR, err);
+        return emitter.emit(ERROR, ACTIVATE_BOND);
+      }
+
+      return emitter.emit(ACTIVATE_BOND_RETURNED, res)
+    })
+  }
+
+  _callActivate = async (account, callback) => {
+    const web3 = await this._getWeb3Provider();
+    const keeperAsset = store.getStore('keeperAsset')
+
+    const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+    keeperContract.methods.activate(keeperAsset.address).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+      .on('transactionHash', function(hash){
+        emitter.emit(TX_SUBMITTED, hash)
+        callback(null, hash)
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        if(confirmationNumber === 2) {
+          emitter.emit(TX_CONFIRMED, receipt.transactionHash)
+        }
+      })
+      .on('receipt', function(receipt){
+        emitter.emit(TX_RECEIPT, receipt.transactionHash)
+      })
+      .on('error', function(error) {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+      .catch((error) => {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+  }
+
+  getKeeperProfile = async (payload) => {
+    const keeperAsset = store.getStore('keeperAsset')
+    const web3 = await this._getWeb3Provider()
+    if(!web3) {
+      emitter.emit(KEEPER_PROFILE_RETURNED, {})
+      return
+    }
+
+    try {
+
+      let keeperProfile = await this._getKeeperData(web3, keeperAsset, payload.content.address)
+      keeperProfile.profileAddress = payload.content.address
+
+      emitter.emit(KEEPER_PROFILE_RETURNED, keeperProfile)
+
+    } catch(ex) {
+      emitter.emit(SNACKBAR_ERROR, ex)
+      return emitter.emit(ERROR, GET_KEEPER_PROFILE)
+    }
+  }
+
+  addJob = async (payload) => {
+    const account = store.getStore('account')
+
+    const { address, addLiquidityAmount } = payload.content
+
+    this._callAddLiquidityToJob(account, address, addLiquidityAmount, (err, res) => {
+      if(err) {
+        emitter.emit(SNACKBAR_ERROR, err);
+        return emitter.emit(ERROR, ADD_JOB);
+      }
+
+      return emitter.emit(ADD_JOB_RETURNED, res)
+    })
+  }
+
+  _callAddLiquidityToJob = async (account, address, amount, callback) => {
+    const web3 = await this._getWeb3Provider();
+    const keeperAsset = store.getStore('keeperAsset')
+
+    const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+    let amountToSend = (amount*10**keeperAsset.decimals).toFixed(0);
+
+    keeperContract.methods.addLiquidityToJob(keeperAsset.address, address, amountToSend).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+      .on('transactionHash', function(hash){
+        emitter.emit(TX_SUBMITTED, hash)
+        callback(null, hash)
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        if(confirmationNumber === 2) {
+          emitter.emit(TX_CONFIRMED, receipt.transactionHash)
+        }
+      })
+      .on('receipt', function(receipt){
+        emitter.emit(TX_RECEIPT, receipt.transactionHash)
+      })
+      .on('error', function(error) {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+      .catch((error) => {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+  }
+
+  getJobProfile = async (payload) => {
+    let keeperAsset = store.getStore('keeperAsset')
+    const web3 = await this._getWeb3Provider()
+    if(!web3) {
+      emitter.emit(JOB_PROFILE_RETURNED, {})
+      return
+    }
+
+    try {
+
+      let jobProfile = await this._getJobData(web3, keeperAsset, payload.content.address)
+      jobProfile.address = payload.content.address
+
+      emitter.emit(JOB_PROFILE_RETURNED, jobProfile)
+
+    } catch(ex) {
+      emitter.emit(SNACKBAR_ERROR, ex)
+      return emitter.emit(ERROR, GET_JOB_PROFILE)
+    }
+  }
+
+  _getJobData = async (web3, keeperAsset, address) => {
+    try {
+      let jobProfile = {}
+
+      const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+      const isJob = await keeperContract.methods.jobs(address).call({ })
+      let credits = await keeperContract.methods.credits(address, keeperAsset.address).call({ })
+      credits = credits/10**keeperAsset.decimals
+
+      jobProfile.credits = credits
+      jobProfile.isJob = isJob
+
+      return jobProfile
+    } catch(ex) {
+      console.log(ex)
+      return {
+        credits: 0
+      }
+    }
+  }
+
+
+
+  addLiquidityToJob = async (payload) => {
+    const account = store.getStore('account')
+
+    const { address, addLiquidityAmount } = payload.content
+
+    this._callAddLiquidityToJob(account, address, addLiquidityAmount, (err, res) => {
+      if(err) {
+        emitter.emit(SNACKBAR_ERROR, err);
+        return emitter.emit(ERROR, ADD_LIQUIDITY_TO_JOB);
+      }
+
+      return emitter.emit(ADD_LIQUIDITY_TO_JOB_RETURNED, res)
+    })
+  }
+
+  applyCreditToJob = async (payload) => {
+    const account = store.getStore('account')
+
+    const { address } = payload.content
+
+    this._callApplyCreditToJob(account, address, (err, res) => {
+      if(err) {
+        emitter.emit(SNACKBAR_ERROR, err);
+        return emitter.emit(ERROR, APPLY_CREDIT_TO_JOB);
+      }
+
+      return emitter.emit(APPLY_CREDIT_TO_JOB_RETURNED, res)
+    })
+  }
+
+  _callApplyCreditToJob = async (account, address, callback) => {
+    const web3 = await this._getWeb3Provider();
+    const keeperAsset = store.getStore('keeperAsset')
+
+    const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+    keeperContract.methods.applyCreditToJob(account.address, keeperAsset.address, address).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+      .on('transactionHash', function(hash){
+        emitter.emit(TX_SUBMITTED, hash)
+        callback(null, hash)
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        if(confirmationNumber === 2) {
+          emitter.emit(TX_CONFIRMED, receipt.transactionHash)
+        }
+      })
+      .on('receipt', function(receipt){
+        emitter.emit(TX_RECEIPT, receipt.transactionHash)
+      })
+      .on('error', function(error) {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+      .catch((error) => {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+  }
+
+
+  unbondLiquidityFromJob = async (payload) => {
+    const account = store.getStore('account')
+
+    const { address, removeLiquidityAmount } = payload.content
+
+    this._callUnbondLiquidityFromJob(account, address, removeLiquidityAmount, (err, res) => {
+      if(err) {
+        emitter.emit(SNACKBAR_ERROR, err);
+        return emitter.emit(ERROR, UNBOND_LIQUIDITY_FROM_JOB);
+      }
+
+      return emitter.emit(UNBOND_LIQUIDITY_FROM_JOB_RETURNED, res)
+    })
+  }
+
+  _callUnbondLiquidityFromJob = async (account, address, amount, callback) => {
+    const web3 = await this._getWeb3Provider();
+    const keeperAsset = store.getStore('keeperAsset')
+
+    const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+    let amountToSend = (amount*10**keeperAsset.decimals).toFixed(0);
+
+    keeperContract.methods.unbondLiquidityFromJob(keeperAsset.address, address, amountToSend).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+      .on('transactionHash', function(hash){
+        emitter.emit(TX_SUBMITTED, hash)
+        callback(null, hash)
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        if(confirmationNumber === 2) {
+          emitter.emit(TX_CONFIRMED, receipt.transactionHash)
+        }
+      })
+      .on('receipt', function(receipt){
+        emitter.emit(TX_RECEIPT, receipt.transactionHash)
+      })
+      .on('error', function(error) {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+      .catch((error) => {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+  }
+
+  removeLiquidityFromJob = async (payload) => {
+    const account = store.getStore('account')
+
+    const { address } = payload.content
+
+    this._callRemoveLiquidityFromJob(account, address, (err, res) => {
+      if(err) {
+        emitter.emit(SNACKBAR_ERROR, err);
+        return emitter.emit(ERROR, REMOVE_LIQUIDITY_FROM_JOB);
+      }
+
+      return emitter.emit(REMOVE_LIQUIDITY_FROM_JOB_RETURNED, res)
+    })
+  }
+
+  _callRemoveLiquidityFromJob = async (account, address, callback) => {
+    const web3 = await this._getWeb3Provider();
+    const keeperAsset = store.getStore('keeperAsset')
+
+    const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+    keeperContract.methods.removeLiquidityFromJob(keeperAsset.address, address).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+      .on('transactionHash', function(hash){
+        emitter.emit(TX_SUBMITTED, hash)
+        callback(null, hash)
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        if(confirmationNumber === 2) {
+          emitter.emit(TX_CONFIRMED, receipt.transactionHash)
+        }
+      })
+      .on('receipt', function(receipt){
+        emitter.emit(TX_RECEIPT, receipt.transactionHash)
+      })
+      .on('error', function(error) {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+      .catch((error) => {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+  }
+
+  slash = async (payload) => {
+    const account = store.getStore('account')
+
+    const { address } = payload.content
+
+    this._callDown(account, address, (err, res) => {
+      if(err) {
+        emitter.emit(SNACKBAR_ERROR, err);
+        return emitter.emit(ERROR, SLASH);
+      }
+
+      return emitter.emit(SLASH_RETURNED, res)
+    })
+  }
+
+  _callDown = async (account, address, callback) => {
+    const web3 = await this._getWeb3Provider();
+
+    const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+    keeperContract.methods.down(address).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
       .on('transactionHash', function(hash){
         emitter.emit(TX_SUBMITTED, hash)
         callback(null, hash)
