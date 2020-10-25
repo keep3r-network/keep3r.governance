@@ -235,15 +235,15 @@ class Header extends Component {
           <div className={ classes.icon }>
             <img
               alt=""
-              src={ require('../../assets/YFI-logo.png') }
+              src={ require('../../assets/logo.png') }
               height={ '40px' }
               onClick={ () => { this.nav('') } }
             />
-            <Typography variant={ 'h3'} className={ classes.name } onClick={ () => { this.nav('') } }>Governance</Typography>
+            <Typography variant={ 'h3'} className={ classes.name } onClick={ () => { this.nav('') } }>keep3r.network</Typography>
           </div>
           <div className={ classes.links }>
-            { this.renderLink('governance') }
             { this.renderLink('keep3r') }
+            { this.renderLink('governance') }
           </div>
           <div className={ classes.account }>
             { !account.address &&

@@ -132,7 +132,7 @@ class Store {
       rewardAsset: {
         address: config.rewardsAddress,
         abi: RewardsABI,
-        symbol: 'LBD',
+        symbol: 'KBD',
         name: 'Liquidity Income Delegate',
         decimals: 18,
         balance: 0,
