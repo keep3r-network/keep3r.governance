@@ -68,6 +68,7 @@ import { LiquidityABI } from './abi/liquidityABI';
 import { RewardsABI } from './abi/rewardsABI';
 import { PoolABI } from './abi/poolABI';
 import { KeeperABI } from './abi/keeperABI';
+import { JobRegistryABI } from './abi/jobRegistryABI';
 
 const rp = require('request-promise');
 
@@ -273,10 +274,10 @@ class Store {
     let baseAsset = store.getStore('baseAsset')
     let liquidityAsset = store.getStore('liquidityAsset')
     let rewardAsset = store.getStore('rewardAsset')
-    let poolAsset = store.getStore('poolAsset')
+    // let poolAsset = store.getStore('poolAsset')
     let keeperAsset = store.getStore('keeperAsset')
 
-    let assets = [baseAsset, liquidityAsset, rewardAsset, poolAsset]
+    let assets = [baseAsset, liquidityAsset, rewardAsset] // ,poolAsset
 
     if(!account || !account.address || !assets) {
       return false
@@ -301,10 +302,10 @@ class Store {
       baseAsset = resultAssets[0]
       liquidityAsset = resultAssets[1]
       rewardAsset = resultAssets[2]
-      poolAsset = resultAssets[3]
+      // poolAsset = resultAssets[3]
       keeperAsset = resultAssets[4]
 
-      store.setStore({ baseAsset: baseAsset, liquidityAsset: liquidityAsset, rewardAsset: rewardAsset,  poolAsset: poolAsset })
+      store.setStore({ baseAsset: baseAsset, liquidityAsset: liquidityAsset, rewardAsset: rewardAsset }) //, poolAsset: poolAsset
       return emitter.emit(BALANCES_RETURNED)
     })
   }
@@ -1239,16 +1240,78 @@ class Store {
   addJob = async (payload) => {
     const account = store.getStore('account')
 
-    const { address, addLiquidityAmount } = payload.content
+    const { address, addLiquidityAmount, name, docs, ipfs } = payload.content
 
-    this._callAddLiquidityToJob(account, address, addLiquidityAmount, (err, res) => {
+    this._callAddLiquidityToJob(account, address, addLiquidityAmount, async (err, res) => {
       if(err) {
         emitter.emit(SNACKBAR_ERROR, err);
         return emitter.emit(ERROR, ADD_JOB);
       }
 
-      return emitter.emit(ADD_JOB_RETURNED, res)
+      const governanceAddress = await this._getGovernanceAddress()
+      if(governanceAddress.toLowerCase() === account.address.toLowerCase() && (name !== '' || docs !== '' || ipfs !== '')) {
+        this._callAdd(account, address, name, docs, ipfs, (err, res) => {
+          if(err) {
+            emitter.emit(SNACKBAR_ERROR, err);
+            return emitter.emit(ERROR, ADD_JOB);
+          }
+
+          return emitter.emit(ADD_JOB_RETURNED, res)
+        })
+
+      } else {
+        return emitter.emit(ADD_JOB_RETURNED, res)
+      }
     })
+  }
+
+  _getGovernanceAddress = async () => {
+    try {
+      const web3 = await this._getWeb3Provider();
+      const jobRegistryContract = new web3.eth.Contract(JobRegistryABI, config.jobRegistryAddress)
+
+      const address = await jobRegistryContract.methods.governance().call({})
+      return address
+    } catch(ex) {
+      console.log(ex)
+      return null
+    }
+  }
+
+  _callAdd = async (account, address, name, docs, ipfs, callback) => {
+    const web3 = await this._getWeb3Provider();
+
+    const jobRegistryContract = new web3.eth.Contract(JobRegistryABI, config.jobRegistryAddress)
+
+    jobRegistryContract.methods.add(address, name, ipfs, docs).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+      .on('transactionHash', function(hash){
+        emitter.emit(TX_SUBMITTED, hash)
+        callback(null, hash)
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        if(confirmationNumber === 2) {
+          emitter.emit(TX_CONFIRMED, receipt.transactionHash)
+        }
+      })
+      .on('receipt', function(receipt){
+        emitter.emit(TX_RECEIPT, receipt.transactionHash)
+      })
+      .on('error', function(error) {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+      .catch((error) => {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
   }
 
   _callAddLiquidityToJob = async (account, address, amount, callback) => {
@@ -1313,11 +1376,24 @@ class Store {
 
   _getJobData = async (web3, keeperAsset, address) => {
     try {
-      let jobProfile = {}
-
       const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+      const jobRegistryContract = new web3.eth.Contract(JobRegistryABI, config.jobRegistryAddress)
 
       const isJob = await keeperContract.methods.jobs(address).call({ })
+      if(!isJob) {
+        return {
+          isJob: false
+        }
+      }
+
+      let jobProfile = await jobRegistryContract.methods.jobData(address).call({ })
+      if(!jobProfile) {
+        jobProfile = {}
+      }
+
+      const jobAdded = await jobRegistryContract.methods.jobAdded(address).call({ })
+      jobProfile.jobAdded = jobAdded
+
       let credits = await keeperContract.methods.credits(address, keeperAsset.address).call({ })
       credits = credits/10**keeperAsset.decimals
 

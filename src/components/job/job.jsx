@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import * as moment from 'moment';
 import { withRouter } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import {
@@ -196,6 +197,20 @@ const styles = theme => ({
   },
   notJobInfo: {
     marginBottom: '12px'
+  },
+  jobMetadata: {
+    minWidth: '100%',
+    marginBottom: '40px',
+    flexWrap: 'wrap',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  gray: {
+    color: colors.darkGray
+  },
+  textColor: {
+    color: colors.text
   }
 })
 
@@ -339,7 +354,7 @@ class Job extends Component {
           <div className={ classes.titleHeading }>
             <div>
               <Typography variant='h3' className={ classes.title }>{ (job && job.address) ? job.address : 'N/A' }</Typography>
-              <Typography variant='h4' className={ classes.subTitle }> { job && job.isJob ? 'Job found' : 'Job not available' } </Typography>
+              <Typography variant='h4' className={ classes.subTitle }> { (job && job.isJob ? ( job._name ? job._name : 'Job found') : 'Job not available') } </Typography>
             </div>
             <div>
               { job &&
@@ -350,6 +365,7 @@ class Job extends Component {
               }
             </div>
           </div>
+
           {
             job && !job.isJob &&
             <div className={ classes.notJobContainer }>
@@ -362,6 +378,19 @@ class Job extends Component {
               >
                 <Typography variant={ 'h4'}>Add Job</Typography>
               </Button>
+            </div>
+          }
+          {
+            job && job.isJob &&
+            <div className={ classes.jobMetadata }>
+              <div>
+                <Typography variant='h4'><a href={job._docs} target='_blank' className={ classes.textColor }>{ job._docs ? job._docs : 'Not set' }</a></Typography>
+                <Typography variant='h4' className={ classes.gray }>Documentation</Typography>
+              </div>
+              <div>
+                <Typography variant='h4'>{ job._added ? moment(job._added*1000).format("YYYY/MM/DD kk:mm") : 'Not set' }</Typography>
+                <Typography variant='h4' className={ classes.gray }>Job Added</Typography>
+              </div>
             </div>
           }
           {

@@ -75,7 +75,7 @@ const styles = theme => ({
   },
   buttonContainer: {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     width: '100%'
   },
@@ -127,7 +127,13 @@ class JobCreation extends Component {
       address: '',
       addressError: false,
       addLiquidityAmount: '',
-      addLiquidityAmountError: false
+      addLiquidityAmountError: false,
+      name: '',
+      nameError: false,
+      ipfs: '',
+      ipfsError: false,
+      docs: '',
+      docsError: false,
     }
 
     dispatcher.dispatch({ type:GET_BALANCES, content: {} })
@@ -167,7 +173,13 @@ class JobCreation extends Component {
       address,
       addressError,
       addLiquidityAmount,
-      addLiquidityAmountError
+      addLiquidityAmountError,
+      name,
+      nameError,
+      docs,
+      docsError,
+      ipfs,
+      ipfsError,
     } = this.state
 
     return (
@@ -191,7 +203,7 @@ class JobCreation extends Component {
         <div className={ classes.JobContainer }>
           <div className={ classes.field }>
             <div className={ classes.fieldTitle }>
-              <Typography variant='h4'>Address</Typography>
+              <Typography variant='h4'>Job Address *</Typography>
             </div>
             <TextField
               fullWidth
@@ -202,7 +214,58 @@ class JobCreation extends Component {
               error={ addressError }
               helperText={ addressError }
               onChange={ this.onChange }
-              placeholder="Job address"
+              placeholder="Ethereum address of your job"
+              variant="outlined"
+            />
+          </div>
+          <div className={ classes.field }>
+            <div className={ classes.fieldTitle }>
+              <Typography variant='h4'>Job Name</Typography>
+            </div>
+            <TextField
+              fullWidth
+              disabled={ loading }
+              className={ classes.titleInput }
+              id={ 'name' }
+              value={ name }
+              error={ nameError }
+              helperText={ nameError }
+              onChange={ this.onChange }
+              placeholder="Name of the job"
+              variant="outlined"
+            />
+          </div>
+          <div className={ classes.field }>
+            <div className={ classes.fieldTitle }>
+              <Typography variant='h4'>Documentation</Typography>
+            </div>
+            <TextField
+              fullWidth
+              disabled={ loading }
+              className={ classes.titleInput }
+              id={ 'docs' }
+              value={ docs }
+              error={ docsError }
+              helperText={ docsError }
+              onChange={ this.onChange }
+              placeholder="Documentation describing the job spec"
+              variant="outlined"
+            />
+          </div>
+          <div className={ classes.field }>
+            <div className={ classes.fieldTitle }>
+              <Typography variant='h4'>IPFS</Typography>
+            </div>
+            <TextField
+              fullWidth
+              disabled={ loading }
+              className={ classes.titleInput }
+              id={ 'ipfs' }
+              value={ ipfs }
+              error={ ipfsError }
+              helperText={ ipfsError }
+              onChange={ this.onChange }
+              placeholder="IPFS info"
               variant="outlined"
             />
           </div>
@@ -272,7 +335,7 @@ class JobCreation extends Component {
 
   onAddJob = () => {
     this.setState({ addressError: false, addLiquidityAmountError: false })
-    const { address, addLiquidityAmount } = this.state
+    const { address, addLiquidityAmount, name, ipfs, docs } = this.state
 
     let error = false
 
@@ -284,7 +347,7 @@ class JobCreation extends Component {
     if(!error) {
       emitter.emit(START_LOADING, ADD_JOB)
       this.setState({ loading: true })
-      dispatcher.dispatch({ type: ADD_JOB, content: { address: address, addLiquidityAmount: addLiquidityAmount  } })
+      dispatcher.dispatch({ type: ADD_JOB, content: { address, addLiquidityAmount, name, ipfs, docs  } })
     }
   }
 

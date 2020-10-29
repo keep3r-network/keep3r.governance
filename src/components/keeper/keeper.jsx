@@ -160,6 +160,13 @@ const styles = theme => ({
   },
   actionInput: {
     background: colors.white
+  },
+  jobContainer: {
+    cursor: 'pointer',
+    padding: '12px 0px',
+    '&:hover': {
+      background: "rgba(0,0,0,0.1)",
+    },
   }
 })
 
@@ -380,7 +387,7 @@ class Keeper extends Component {
     }
 
     return jobs.map((job) => {
-      return <div onClick={ () => { this.navJob(job) } }>
+      return <div onClick={ () => { this.navJob(job) } } className={ classes.jobContainer }>
         <Typography variant='h4'>{ job }</Typography>
       </div>
     })

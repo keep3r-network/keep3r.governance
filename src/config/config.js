@@ -6,7 +6,8 @@ const config = {
   governanceAddress: '0x71c882bC3191b36bbE839e55dec2e03024943DCD',
   rewardsAddress: '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44',
 
-  keeperAddress: '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44'
+  keeperAddress: '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44',
+  jobRegistryAddress: '0x7396899638410094b3690f8bd2b56f07fdab620c',
 
 };
 
