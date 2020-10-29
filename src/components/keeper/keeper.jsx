@@ -162,11 +162,17 @@ const styles = theme => ({
     background: colors.white
   },
   jobContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     cursor: 'pointer',
     padding: '12px 0px',
     '&:hover': {
       background: "rgba(0,0,0,0.1)",
     },
+  },
+  gray: {
+    color: colors.darkGray,
   }
 })
 
@@ -391,8 +397,15 @@ class Keeper extends Component {
     }
 
     return jobs.map((job) => {
-      return <div onClick={ () => { this.navJob(job) } } className={ classes.jobContainer }>
-        <Typography variant='h4'>{ job }</Typography>
+
+      var address = null;
+      if (job.address) {
+        address = job.address.substring(0,6)+'...'+job.address.substring(job.address.length-4,job.address.length)
+      }
+
+      return <div onClick={ () => { this.navJob(job.address) } } className={ classes.jobContainer }>
+        <Typography variant='h4'>{ job._name }</Typography>
+        <Typography variant='h4' className={ classes.gray }>({ address })</Typography>
       </div>
     })
   }

@@ -1073,6 +1073,7 @@ class Store {
   getJobs = async (payload) => {
     const account = store.getStore('account')
     const web3 = await this._getWeb3Provider()
+    const keeperAsset = store.getStore('keeperAsset')
 
     if(!web3) {
       emitter.emit(JOBS_RETURNED)
@@ -1083,8 +1084,25 @@ class Store {
       const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
       const jobs = await keeperContract.methods.getJobs().call({ from: account.address });
 
-      store.setStore({ jobs: jobs })
-      emitter.emit(JOBS_RETURNED)
+      async.map(jobs, async (job, callback) => {
+        let jobProfile = await this._getJobData(web3, keeperAsset, job)
+        jobProfile.address = job
+
+        if(callback) {
+          callback(null, jobProfile)
+        } else {
+          return jobProfile
+        }
+      }, (err, jobsData) => {
+        if(err) {
+          emitter.emit(SNACKBAR_ERROR, err);
+          return emitter.emit(ERROR, GET_JOBS);
+        }
+
+        store.setStore({ jobs: jobsData })
+        emitter.emit(JOBS_RETURNED)
+      })
+
     } catch(ex) {
       emitter.emit(SNACKBAR_ERROR, ex)
       return emitter.emit(ERROR, GET_JOBS)
