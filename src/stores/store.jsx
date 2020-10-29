@@ -1055,13 +1055,13 @@ class Store {
       keeperAsset.firstSeen = await keeperContract.methods.firstSeen(address).call({ })
       keeperAsset.delegates = await keeperContract.methods.delegates(address).call({ })
 
-      keeperAsset.work = await keeperContract.methods.work(address).call({ })
       keeperAsset.workCompleted = await keeperContract.methods.workCompleted(address).call({ })
+      keeperAsset.workCompleted = keeperAsset.workCompleted/10**keeperAsset.decimals
 
       keeperAsset.lastJob = await keeperContract.methods.lastJob(address).call({ })
 
       keeperAsset.isActive = await keeperContract.methods.keepers(address).call({ })
-
+      console.log(keeperAsset)
       return keeperAsset
     } catch(ex) {
       console.log(ex)

@@ -56,7 +56,7 @@ const styles = theme => ({
     width: '100px',
     marginBottom: '24px',
   },
-  disaclaimer: {
+  disclaimer: {
     padding: '12px',
     border: '1px solid rgb(174, 174, 174)',
     borderRadius: '10px',
@@ -331,7 +331,7 @@ class Job extends Component {
               <Typography variant={ 'h4'}>Back</Typography>
             </Button>
           </div>
-          <Typography variant={'h5'} className={ classes.disaclaimer }>This project is in beta. Use at your own risk.</Typography>
+          <Typography variant={'h5'} className={ classes.disclaimer }>This project is in beta. Use at your own risk.</Typography>
           <div className={ classes.topButton }>
           </div>
         </div>

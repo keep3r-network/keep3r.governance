@@ -3,11 +3,10 @@ const config = {
   gasPriceURL: 'https://gasprice.poa.network/',
 
   liquidityAddress: '0x375Da3e307Ef2E1A9D9e1516f80738Ca52cb7B85',
-  poolAddress: '0xe5bd741d9f3c861d8c2fd547ff6a19a0d510bd2e',
   governanceAddress: '0x71c882bC3191b36bbE839e55dec2e03024943DCD',
-  rewardsAddress: '0x6803c357fb329755f906839d800617a93d61C202',
+  rewardsAddress: '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44',
 
-  keeperAddress: '0xb0a150b23354d90182d2024239d264f3be8b00b2'
+  keeperAddress: '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44'
 
 };
 
