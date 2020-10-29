@@ -341,6 +341,10 @@ class Keeper extends Component {
               <Typography variant='h4' className={ classes.valueTitle }>Work Completed</Typography>
               <Typography variant='h3' className={ classes.valueValue }>{ keeperAsset.workCompleted }</Typography>
             </div>
+            <div className={ classes.valueContainer }>
+              <Typography variant='h4' className={ classes.valueTitle }>Bonds pending activation</Typography>
+              { this.renderPendingBonds() }
+            </div>
             {
               this.renderStatus()
             }
@@ -468,6 +472,19 @@ class Keeper extends Component {
         >
           add
         </Button>
+      </div>
+    )
+  }
+
+  renderPendingBonds = () => {
+    const { classes } = this.props
+    const {
+      keeperAsset,
+    } = this.state
+
+    return (
+      <div className={ classes.valueAction }>
+        <Typography variant='h3' className={ classes.valueValue }> { keeperAsset.pendingBonds ? keeperAsset.pendingBonds.toFixed(2) : '0.00' } { keeperAsset.symbol } </Typography>
       </div>
     )
   }
