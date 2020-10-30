@@ -211,6 +211,9 @@ const styles = theme => ({
   },
   textColor: {
     color: colors.text
+  },
+  jobInfo: {
+    marginBottom: '12px'
   }
 })
 
@@ -383,13 +386,17 @@ class Job extends Component {
           {
             job && job.isJob &&
             <div className={ classes.jobMetadata }>
-              <div>
+              <div className={ classes.jobInfo }>
                 <Typography variant='h4'><a href={job._docs} target='_blank' className={ classes.textColor }>{ job._docs ? job._docs : 'Not set' }</a></Typography>
                 <Typography variant='h4' className={ classes.gray }>Documentation</Typography>
               </div>
-              <div>
+              <div className={ classes.jobInfo }>
                 <Typography variant='h4'>{ job._added ? moment(job._added*1000).format("YYYY/MM/DD kk:mm") : 'Not set' }</Typography>
                 <Typography variant='h4' className={ classes.gray }>Job Added</Typography>
+              </div>
+              <div className={ classes.jobInfo }>
+                <Typography variant='h4'>{ job.credits ? job.credits.toFixed(2) : '0.00' } { keeperAsset ? keeperAsset.symbol : '' }</Typography>
+                <Typography variant='h4' className={ classes.gray }>Total Credits</Typography>
               </div>
             </div>
           }
@@ -444,7 +451,7 @@ class Job extends Component {
                   <Typography variant='h4'>Remove liquidity</Typography>
                 </div>
                 <div className={ classes.inputContainer }>
-                  <Typography variant='h6' className={ classes.balance } onClick={ () => { this.maxClicked('removeLiquidityAmount') } }>{ keeperAsset.balance.toFixed(4) } { keeperAsset.symbol }</Typography>
+                  <Typography variant='h6' className={ classes.balance } onClick={ () => { this.maxClicked('removeLiquidityAmount') } }>{ keeperAsset.bonds.toFixed(4) } { keeperAsset.symbol }</Typography>
                   <TextField
                     fullwidth
                     disabled={ loading }

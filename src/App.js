@@ -190,7 +190,7 @@ class App extends Component {
                   <Keeper />
                 </Route>
                 <Route path="/">
-                  <Proposals />
+                  <Keeper />
                 </Route>
               </Switch>
             </div>

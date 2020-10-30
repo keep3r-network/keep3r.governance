@@ -31,6 +31,8 @@ import {
   KEEPERS_RETURNED,
   ADD_BOND,
   ADD_BOND_RETURNED,
+  REMOVE_BOND,
+  REMOVE_BOND_RETURNED,
   ACTIVATE_BOND,
   ACTIVATE_BOND_RETURNED,
 } from '../../constants'
@@ -103,6 +105,19 @@ const styles = theme => ({
     alignItems: 'flex-end',
     justifyContent: 'space-between',
   },
+  valueActionBonds: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start'
+  },
+  valueActionBondsAction: {
+    marginTop: '12px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    minWidth: '100%'
+  },
   jobsContainer: {
     display: 'flex',
     flex: 1,
@@ -173,6 +188,9 @@ const styles = theme => ({
   },
   gray: {
     color: colors.darkGray,
+  },
+  totalCredits: {
+    textAlign: 'right'
   }
 })
 
@@ -187,7 +205,7 @@ class Keeper extends Component {
 
     const account = store.getStore('account')
     const keeperAsset = store.getStore('keeperAsset')
-    const jobs = store.getStore('jobs')
+    const jobs = store.getStore('jobs').filter((job) => { return job.credits > 0 })
     const now = store.getStore('currentBlock')
 
     this.state = {
@@ -197,6 +215,8 @@ class Keeper extends Component {
       jobs: jobs,
       bondAmount: '',
       bondAmountError: false,
+      removeBondAmount: '',
+      removeBondAmountError: false,
       currentBlock: now
     }
 
@@ -262,7 +282,7 @@ class Keeper extends Component {
 
   jobsReturned = () => {
     emitter.emit(STOP_LOADING, GET_JOBS)
-    this.setState({ jobs: store.getStore('jobs') })
+    this.setState({ jobs: store.getStore('jobs').filter((job) => { return job.credits > 0 }) })
   }
 
   keepersReturned = () => {
@@ -274,6 +294,14 @@ class Keeper extends Component {
     this.setState({
       loading: false,
       onBond: false,
+    })
+    emitter.emit(STOP_LOADING, ADD_BOND)
+  }
+
+  removeBondReturned = () => {
+    this.setState({
+      loading: false,
+      onBondRemove: false,
     })
     emitter.emit(STOP_LOADING, ADD_BOND)
   }
@@ -297,6 +325,7 @@ class Keeper extends Component {
       keeperAsset,
       keepers,
       onBond,
+      onBondRemove,
       currentBlock,
       searchKeeper,
       searchKeeperError,
@@ -340,8 +369,9 @@ class Keeper extends Component {
             </div>
             <div className={ classes.valueContainer }>
               <Typography variant='h4' className={ classes.valueTitle }>Bonds</Typography>
-              { !onBond && this.renderBond() }
+              { (!onBond && !onBondRemove) && this.renderBond() }
               { onBond && this.renderBondAdd() }
+              { onBondRemove && this.renderBondRemove() }
             </div>
             <div className={ classes.valueContainer }>
               <Typography variant='h4' className={ classes.valueTitle }>Work Completed</Typography>
@@ -388,7 +418,7 @@ class Keeper extends Component {
 
   renderJobs = () => {
     const { classes } = this.props
-    const { jobs } = this.state
+    const { jobs, keeperAsset } = this.state
 
     if(jobs.length === 0) {
       return <div>
@@ -403,9 +433,15 @@ class Keeper extends Component {
         address = job.address.substring(0,6)+'...'+job.address.substring(job.address.length-4,job.address.length)
       }
 
-      return <div onClick={ () => { this.navJob(job.address) } } className={ classes.jobContainer }>
-        <Typography variant='h4'>{ job._name }</Typography>
-        <Typography variant='h4' className={ classes.gray }>({ address })</Typography>
+      return <div onClick={ () => { this.navJob(job.address) } } className={ classes.jobContainer } key={ job.address }>
+        <div>
+          <Typography variant='h4'>{ job._name }</Typography>
+          <Typography variant='h4' className={ classes.gray }>{ address }</Typography>
+        </div>
+        <div className={ classes.totalCredits }>
+          <Typography variant='h4'>{ job.credits ? job.credits.toFixed(2) : '0.00' } { keeperAsset ? keeperAsset.symbol : '' }</Typography>
+          <Typography variant='h4' className={ classes.gray }>Total Credits</Typography>
+        </div>
       </div>
     })
   }
@@ -476,15 +512,26 @@ class Keeper extends Component {
     } = this.state
 
     return (
-      <div className={ classes.valueAction }>
+      <div className={ classes.valueActionBonds }>
         <Typography variant='h3' className={ classes.valueValue }> { keeperAsset.bonds ? keeperAsset.bonds.toFixed(2) : '0.00' } { keeperAsset.symbol } </Typography>
-        <Button
-          variant='text'
-          color='primary'
-          onClick={ this.onBondAdd }
-        >
-          add
-        </Button>
+        <div className={ classes.valueActionBondsAction }>
+          <Button
+            size='small'
+            variant='contained'
+            color='primary'
+            onClick={ this.onBondAdd }
+          >
+            add
+          </Button>
+          <Button
+            size='small'
+            variant='contained'
+            color='primary'
+            onClick={ this.onBondRemove }
+          >
+            remove
+          </Button>
+        </div>
       </div>
     )
   }
@@ -522,7 +569,7 @@ class Keeper extends Component {
             variant='outlined'
             color='primary'
             className={ classes.textField }
-            placeholder='Bond amount'
+            placeholder='Amount to bond'
             value={ bondAmount }
             error={ bondAmountError }
             onChange={ this.onChange }
@@ -556,6 +603,60 @@ class Keeper extends Component {
     )
   }
 
+  renderBondRemove = () => {
+    const { classes } = this.props
+    const {
+      keeperAsset,
+      removeBondAmount,
+      removeBondAmountError,
+      loading
+    } = this.state
+
+    return (
+      <div>
+        <div className={ classes.inputContainer }>
+          <Typography variant='h6' className={ classes.balance } onClick={ () => { this.maxClicked('bondRemove') } }>{ keeperAsset.balance.toFixed(4) } { keeperAsset.symbol }</Typography>
+          <TextField
+            fullwidth
+            disabled={ loading }
+            id='removeBondAmount'
+            variant='outlined'
+            color='primary'
+            className={ classes.textField }
+            placeholder='Amount to unbond'
+            value={ removeBondAmount }
+            error={ removeBondAmountError }
+            onChange={ this.onChange }
+            InputProps={{
+              className: classes.inputField,
+              startAdornment: <InputAdornment position="start" className={ classes.inputAdornment }>
+                <img src={ require('../../assets/tokens/'+keeperAsset.logo) } width="30px" alt="" />
+              </InputAdornment>
+            }}
+          />
+        </div>
+        <div className={ classes.valueActionButtons }>
+          <Button
+            variant='text'
+            size='small'
+            color='primary'
+            onClick={ this.onBondRemoveClose }
+          >
+            cancel
+          </Button>
+          <Button
+            variant='contained'
+            size='small'
+            color='primary'
+            onClick={ this.onCallBondRemove }
+          >
+            remove
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   maxClicked = (type) => {
     const {
       keeperAsset
@@ -564,6 +665,9 @@ class Keeper extends Component {
     switch (type) {
       case 'bond':
         this.setState({ bondAmount: keeperAsset.balance })
+        break;
+      case 'bondRemove':
+        this.setState({ removeBondAmount: keeperAsset.bonds })
         break;
       default:
     }
@@ -605,8 +709,11 @@ class Keeper extends Component {
     }
 
     const { keeperAsset } = this.state
-    if(event.target.id === 'mintAmount' && event.target.value > keeperAsset.balance) {
+    if(event.target.id === 'bondAmount' && event.target.value > keeperAsset.balance) {
       event.target.value = keeperAsset.balance
+    }
+    if(event.target.id === 'removeBondAmount' && event.target.value > keeperAsset.bonds) {
+      event.target.value = keeperAsset.bonds
     }
 
     let val = []
@@ -632,12 +739,38 @@ class Keeper extends Component {
     }
   }
 
+  onCallBondRemove = () => {
+    this.setState({ bondAmountError: false })
+    const { keeperAsset, removeBondAmount } = this.state
+
+    let error = false
+
+    if(removeBondAmount > keeperAsset.balance) {
+      error = true
+      this.setState({ removeBondAmountError: 'Amount > bonded balance' })
+    }
+
+    if(!error) {
+      emitter.emit(START_LOADING, REMOVE_BOND)
+      this.setState({ loading: true })
+      dispatcher.dispatch({ type: REMOVE_BOND, content: { amount: removeBondAmount } })
+    }
+  }
+
   onBondAdd = () => {
     this.setState({ onBond: true })
   }
 
   onBondAddClose = () => {
     this.setState({ onBond: false })
+  }
+
+  onBondRemove = () => {
+    this.setState({ onBondRemove: true })
+  }
+
+  onBondRemoveClose = () => {
+    this.setState({ onBondRemove: false })
   }
 
   onActivate = () => {

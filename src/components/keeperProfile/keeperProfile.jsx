@@ -306,7 +306,7 @@ class Keeper extends Component {
     const { keeperProfile } = this.state
 
     emitter.emit(START_LOADING, SLASH)
-    dispatcher.dispatch({ type: 'SLASH', content: keeperProfile.profileAddress })
+    dispatcher.dispatch({ type: 'SLASH', content: { address: keeperProfile.profileAddress } })
   }
 }
 

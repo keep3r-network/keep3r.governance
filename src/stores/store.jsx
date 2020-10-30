@@ -42,6 +42,8 @@ import {
   KEEPERS_RETURNED,
   ADD_BOND,
   ADD_BOND_RETURNED,
+  REMOVE_BOND,
+  REMOVE_BOND_RETURNED,
   ACTIVATE_BOND,
   ACTIVATE_BOND_RETURNED,
   ADD_JOB,
@@ -224,6 +226,9 @@ class Store {
             break;
           case ADD_BOND:
             this.addBond(payload);
+            break;
+          case REMOVE_BOND:
+            this.removeBond(payload);
             break;
           case ACTIVATE_BOND:
             this.activateBond(payload);
@@ -1154,6 +1159,59 @@ class Store {
     let amountToSend = (amount*10**keeperAsset.decimals).toFixed(0);
 
     keeperContract.methods.bond(keeperAsset.address, amountToSend).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+      .on('transactionHash', function(hash){
+        emitter.emit(TX_SUBMITTED, hash)
+        callback(null, hash)
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        if(confirmationNumber === 2) {
+          emitter.emit(TX_CONFIRMED, receipt.transactionHash)
+        }
+      })
+      .on('receipt', function(receipt){
+        emitter.emit(TX_RECEIPT, receipt.transactionHash)
+      })
+      .on('error', function(error) {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+      .catch((error) => {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+  }
+
+  removeBond = (payload) => {
+    const account = store.getStore('account')
+    const { amount } = payload.content
+
+    this._callUnbond(amount, account, (err, res) => {
+      if(err) {
+        emitter.emit(SNACKBAR_ERROR, err);
+        return emitter.emit(ERROR, REMOVE_BOND);
+      }
+
+      return emitter.emit(REMOVE_BOND_RETURNED, res)
+    })
+  }
+
+  _callUnbond = async (amount, account, callback) => {
+    const web3 = await this._getWeb3Provider();
+    const keeperAsset = store.getStore('keeperAsset')
+
+    const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+    let amountToSend = (amount*10**keeperAsset.decimals).toFixed(0);
+
+    keeperContract.methods.unbond(keeperAsset.address, amountToSend).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
       .on('transactionHash', function(hash){
         emitter.emit(TX_SUBMITTED, hash)
         callback(null, hash)

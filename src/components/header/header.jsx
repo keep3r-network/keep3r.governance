@@ -335,7 +335,7 @@ class Header extends Component {
     } = this.props;
 
     return (
-      <div className={ (window.location.pathname.includes(screen))?classes.linkActive:classes.link } onClick={ () => { this.nav(screen) } }>
+      <div className={ (window.location.pathname.includes(screen) || (screen==='keep3r' && window.location.pathname==='/')  )?classes.linkActive:classes.link } onClick={ () => { this.nav(screen) } }>
         <Typography variant={'h4'} className={ `title` }>{ screen }</Typography>
       </div>
     )
