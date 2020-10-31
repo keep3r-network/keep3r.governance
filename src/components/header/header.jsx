@@ -33,9 +33,6 @@ const styles = theme => ({
     verticalAlign: 'top',
     width: '100%',
     display: 'flex',
-    [theme.breakpoints.down('sm')]: {
-      marginBottom: '40px'
-    }
   },
   headerV2: {
     background: colors.white,
@@ -101,10 +98,21 @@ const styles = theme => ({
     },
     [theme.breakpoints.down('sm')]: {
       display: 'flex',
-      position: 'absolute',
-      top: '90px',
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      justifyContent: 'center',
+      zIndex: 100,
+      color: colors.white,
+      background: colors.blue,
+      padding: '20px',
+      borderRadius: '40px 40px 0 0',
       border: "1px solid "+colors.borderBlue,
-      background: colors.white
+      '&:hover': {
+        background: colors.white,
+        color: colors.black,
+      }    
     }
   },
   name: {

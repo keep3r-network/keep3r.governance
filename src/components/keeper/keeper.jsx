@@ -46,8 +46,8 @@ const styles = theme => ({
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '40px',
-    background: colors.white,
+    paddingBottom: '60px',
+    // background: colors.white,
   },
   between: {
     width: '40px'
@@ -60,7 +60,7 @@ const styles = theme => ({
     alignItems: 'center',
     maxWidth: '900px',
     marginBottom: '20px',
-    background: colors.white,
+    // background: colors.white,
     [theme.breakpoints.down('sm')]: {
       flexWrap: 'wrap',
       justifyContent: 'center',
@@ -150,7 +150,6 @@ const styles = theme => ({
     flexDirection: 'column',
     background: colors.white,
     alignSelf: 'flex-start',
-    background: colors.white,
     [theme.breakpoints.down('sm')]: {
       marginLeft: '0px',
       maxWidth: '90vw',
@@ -201,7 +200,7 @@ const styles = theme => ({
     cursor: 'pointer'
   },
   actionInput: {
-    background: colors.white
+    // background: colors.white
   },
   jobContainer: {
     display: 'flex',
