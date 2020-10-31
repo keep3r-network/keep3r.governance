@@ -164,7 +164,7 @@ class Currencies extends Component {
 
       baseAsset: store.getStore('baseAsset'),
       liquidityAsset: store.getStore('liquidityAsset'),
-      rewardAsset: store.getStore('rewardAsset'),
+      keeperAsset: store.getStore('keeperAsset'),
       poolAsset: store.getStore('poolAsset'),
 
       mintAmount: '',
@@ -178,7 +178,7 @@ class Currencies extends Component {
       rewardsAvailable: 0
     }
 
-    dispatcher.dispatch({ type: GET_REWARDS_AVAILABLE, content: {} })
+    // dispatcher.dispatch({ type: GET_REWARDS_AVAILABLE, content: {} })
   }
 
   componentWillMount() {
@@ -219,7 +219,7 @@ class Currencies extends Component {
       loading: false,
       baseAsset: store.getStore('baseAsset'),
       liquidityAsset: store.getStore('liquidityAsset'),
-      rewardAsset: store.getStore('rewardAsset'),
+      keeperAsset: store.getStore('keeperAsset'),
       poolAsset: store.getStore('poolAsset'),
     })
   }
@@ -269,7 +269,7 @@ class Currencies extends Component {
       // stakeAmountError,
       // baseAsset,
       // liquidityAsset,
-      rewardAsset,
+      keeperAsset,
       // poolAsset,
       // mintReceiveAmount,
       rewardsAvailable
@@ -282,24 +282,8 @@ class Currencies extends Component {
           <CloseIcon className={ classes.closeIcon } onClick={ handleClose } />
         </div>
         <div className={ classes.bigBalances }>
-          <Typography variant='h1' color='primary'>{ rewardAsset ? rewardAsset.balance.toFixed(0) : '0.00' }</Typography>
-          <Typography variant='h4'>{ rewardAsset ? rewardAsset.symbol : 'N/A' }</Typography>
-        </div>
-        <div className={ classes.balanceContainer }>
-          <Typography variant='h4' className={ classes.claimableHeading }>Claimable:</Typography>
-          <div className={ classes.claimContainer }>
-            <Typography variant='h3'>{ rewardsAvailable } {rewardAsset.symbol}</Typography>
-          </div>
-          <div className={ classes.actionRoot }>
-            <Button
-              disabled={ loading }
-              variant="text"
-              color="primary"
-              onClick={ this.onMint }
-              className={ classes.actionButton }>
-              Claim
-            </Button>
-          </div>
+          <Typography variant='h1' color='primary'>{ (keeperAsset && keeperAsset.currentVotes) ? parseFloat(keeperAsset.currentVotes).toFixed(0) : '0' }</Typography>
+          <Typography variant='h4'>{ keeperAsset ? keeperAsset.voteSymbol : 'N/A' }</Typography>
         </div>
       </div>
     )
@@ -308,6 +292,22 @@ class Currencies extends Component {
 
   /*
     ADD BACK IN LATER...
+    <div className={ classes.balanceContainer }>
+      <Typography variant='h4' className={ classes.claimableHeading }>Claimable:</Typography>
+      <div className={ classes.claimContainer }>
+        <Typography variant='h3'>{ rewardsAvailable } {keeperAsset.symbol}</Typography>
+      </div>
+      <div className={ classes.actionRoot }>
+        <Button
+          disabled={ loading }
+          variant="text"
+          color="primary"
+          onClick={ this.onMint }
+          className={ classes.actionButton }>
+          Claim
+        </Button>
+      </div>
+    </div>
     <Typography variant='h6' className={ classes.settingTitle }>Balances</Typography>
     <div className={ classes.balances }>
       <div className={ classes.balanceContainer }>

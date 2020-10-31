@@ -273,8 +273,8 @@ class Header extends Component {
 
     return (
       <div className={ classes.accountDetailsSection }>
-        <Typography className={ classes.accountDetailsBalance } variant='h4'>{ (keeperAsset) ? (keeperAsset.balance + ' ' + keeperAsset.symbol) : '0' }</Typography>
-        <Typography className={ classes.accountDetailsBalance } onClick={ this.currencyClicked } variant='h4'>{ (rewardAsset) ? (rewardAsset.balance + ' ' + rewardAsset.symbol) : '0' }</Typography>
+        <Typography className={ classes.accountDetailsBalance } variant='h4'>{ (keeperAsset && keeperAsset.balance) ? keeperAsset.balance.toFixed(2) : '0' } { keeperAsset ? keeperAsset.symbol : '' }</Typography>
+        <Typography className={ classes.accountDetailsBalance } onClick={ this.currencyClicked } variant='h4'>{ (keeperAsset && keeperAsset.currentVotes && keeperAsset.currentVotes > 0) ? parseFloat(keeperAsset.currentVotes).toFixed(2) : '0' } { keeperAsset ? keeperAsset.voteSymbol : '' }</Typography>
         { width > 899 && <Typography className={ classes.accountDetailsAddress } onClick={ this.addressClicked } variant='h4'>{ address } <div className={ classes.connectedDot }></div></Typography> }
         { width <= 899 && <AccountCircleIcon className={ classes.accountIcon } onClick={ this.addressClicked } /> }
       </div>
