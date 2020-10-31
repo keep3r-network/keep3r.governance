@@ -1070,7 +1070,9 @@ class Store {
 
       keeperAsset.isActive = await keeperContract.methods.keepers(address).call({ })
 
-      keeperAsset.currentVotes = await keeperContract.methods.getCurrentVotes(address).call({ })
+      let currentVotes = await keeperContract.methods.getCurrentVotes(address).call({ })
+      currentVotes = currentVotes/10**keeperAsset.decimals
+      keeperAsset.currentVotes = currentVotes
 
       console.log(keeperAsset)
       return keeperAsset
