@@ -64,6 +64,7 @@ const styles = theme => ({
     [theme.breakpoints.down('sm')]: {
       flexWrap: 'wrap',
       justifyContent: 'center',
+      marginBottom: '10px',
     }
   },
   topButton: {
@@ -79,6 +80,9 @@ const styles = theme => ({
     borderRadius: '10px',
     marginBottom: '24px',
     background: colors.white,
+    [theme.breakpoints.down('sm')]: {
+      minWidth: '90vw',
+    }
   },
   keeperLayout: {
     display: 'flex',
@@ -101,6 +105,7 @@ const styles = theme => ({
     background: colors.white,
     alignSelf: 'flex-start',
     [theme.breakpoints.down('sm')]: {
+      minWidth: '90vw',
       marginRight: '0px',
       marginBottom: '25px'
     }
@@ -148,6 +153,9 @@ const styles = theme => ({
     background: colors.white,
     [theme.breakpoints.down('sm')]: {
       marginLeft: '0px',
+      maxWidth: '90vw',
+      marginBottom: '20px'
+
     }
   },
   title: {
