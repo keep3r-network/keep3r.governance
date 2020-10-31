@@ -33,6 +33,10 @@ const styles = theme => ({
     verticalAlign: 'top',
     width: '100%',
     display: 'flex',
+    marginBottom: '20px',
+    [theme.breakpoints.down('sm')]: {
+      marginBottom: '0px'
+    }
   },
   headerV2: {
     background: colors.white,
@@ -243,8 +247,8 @@ class Header extends Component {
           <div className={ classes.icon }>
             <img
               alt=""
-              src={ require('../../assets/logo.png') }
-              height={ '40px' }
+              src={ require('../../assets/logo.svg') }
+              height={ '37px' }
               onClick={ () => { this.nav('') } }
             />
             <Typography variant={ 'h3'} className={ classes.name } onClick={ () => { this.nav('') } }>keep3r.network</Typography>
