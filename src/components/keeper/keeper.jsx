@@ -46,7 +46,8 @@ const styles = theme => ({
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '40px'
+    paddingBottom: '60px',
+    // background: colors.white,
   },
   between: {
     width: '40px'
@@ -58,24 +59,40 @@ const styles = theme => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     maxWidth: '900px',
-    marginBottom: '20px'
+    marginBottom: '20px',
+    // background: colors.white,
+    [theme.breakpoints.down('sm')]: {
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      marginBottom: '10px',
+    }
   },
   topButton: {
     width: '160px',
     marginBottom: '24px',
+    [theme.breakpoints.down('sm')]: {
+      minWidth: '90vw',
+    }
   },
-  disaclaimer: {
+  disclaimer: {
     padding: '12px',
     border: '1px solid rgb(174, 174, 174)',
     borderRadius: '10px',
     marginBottom: '24px',
     background: colors.white,
+    [theme.breakpoints.down('sm')]: {
+      minWidth: '90vw',
+    }
   },
   keeperLayout: {
     display: 'flex',
     maxWidth: '1200px',
     width: '100%',
-    justifyContent: 'flex-start'
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    [theme.breakpoints.down('sm')]: {
+      justifyContent: 'center'
+    }
   },
   profileContainer: {
     display: 'flex',
@@ -86,7 +103,12 @@ const styles = theme => ({
     marginRight: '20px',
     flexDirection: 'column',
     background: colors.white,
-    alignSelf: 'flex-start'
+    alignSelf: 'flex-start',
+    [theme.breakpoints.down('sm')]: {
+      minWidth: '90vw',
+      marginRight: '0px',
+      marginBottom: '25px'
+    }
   },
   valueContainer: {
     width: '100%',
@@ -127,7 +149,13 @@ const styles = theme => ({
     marginLeft: '20px',
     flexDirection: 'column',
     background: colors.white,
-    alignSelf: 'flex-start'
+    alignSelf: 'flex-start',
+    [theme.breakpoints.down('sm')]: {
+      marginLeft: '0px',
+      maxWidth: '90vw',
+      marginBottom: '20px'
+
+    }
   },
   title: {
     width: '100%',
@@ -139,8 +167,6 @@ const styles = theme => ({
     alignItems: 'flex-end',
     height: '40px'
   },
-
-
   inputContainer: {
     flex: 1,
     display: 'flex',
@@ -174,7 +200,7 @@ const styles = theme => ({
     cursor: 'pointer'
   },
   actionInput: {
-    background: colors.white
+    // background: colors.white
   },
   jobContainer: {
     display: 'flex',
@@ -341,7 +367,7 @@ class Keeper extends Component {
         <div className={ classes.intro }>
           <div className={ classes.topButton }>
           </div>
-          <Typography variant={'h5'} className={ classes.disaclaimer }>This project is in beta. Use at your own risk.</Typography>
+          <Typography variant={'h5'} className={ classes.disclaimer }>This project is in beta. Use at your own risk.</Typography>
           <div className={ classes.topButton }>
             <TextField
               fullWidth

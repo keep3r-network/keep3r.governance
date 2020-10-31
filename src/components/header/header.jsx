@@ -33,8 +33,9 @@ const styles = theme => ({
     verticalAlign: 'top',
     width: '100%',
     display: 'flex',
+    marginBottom: '20px',
     [theme.breakpoints.down('sm')]: {
-      marginBottom: '40px'
+      marginBottom: '0px'
     }
   },
   headerV2: {
@@ -101,10 +102,21 @@ const styles = theme => ({
     },
     [theme.breakpoints.down('sm')]: {
       display: 'flex',
-      position: 'absolute',
-      top: '90px',
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      justifyContent: 'center',
+      zIndex: 100,
+      color: colors.white,
+      background: colors.blue,
+      padding: '20px',
+      borderRadius: '40px 40px 0 0',
       border: "1px solid "+colors.borderBlue,
-      background: colors.white
+      '&:hover': {
+        background: colors.white,
+        color: colors.black,
+      }    
     }
   },
   name: {
@@ -235,8 +247,8 @@ class Header extends Component {
           <div className={ classes.icon }>
             <img
               alt=""
-              src={ require('../../assets/logo.png') }
-              height={ '40px' }
+              src={ require('../../assets/logo.svg') }
+              height={ '37px' }
               onClick={ () => { this.nav('') } }
             />
             <Typography variant={ 'h3'} className={ classes.name } onClick={ () => { this.nav('') } }>keep3r.network</Typography>
