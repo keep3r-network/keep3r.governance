@@ -34,6 +34,7 @@ const styles = theme => ({
     borderTop: '1px solid '+colors.borderBlue,
     [theme.breakpoints.down('xs')]: {
       justifyContent: 'flex-start',
+      flexDirection: 'column'
     }
   },
   heading: {
