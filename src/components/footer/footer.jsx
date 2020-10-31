@@ -24,16 +24,14 @@ const store = Store.store
 
 const styles = theme => ({
   footer: {
-    padding: '24px',
+    padding: '48px',
     display: 'flex',
     justifyContent: 'space-evenly',
     width: '100%',
     background: colors.white,
-    borderRadius: '50px 50px 0px 0px',
-    border: '1px solid '+colors.borderBlue,
-    borderBottom: 'none',
     marginTop: '48px',
     flexWrap: 'wrap',
+    borderTop: '1px solid '+colors.borderBlue,
     [theme.breakpoints.down('xs')]: {
       justifyContent: 'flex-start',
     }
@@ -109,7 +107,28 @@ class Footer extends Component {
 
     return (
       <div className={classes.footer}>
-        
+
+        <div className={ classes.products }>
+          <Typography className={ classes.heading } variant={ 'h6'}>Documentation</Typography>
+          <div  className={ classes.link } onClick={()=> window.open("https://docs.keep3r.network/", "_blank")} >
+            <DescriptionIcon height='15px' className={ classes.icon } />
+            <Typography variant={ 'h4'} >docs.keep3r.network</Typography>
+          </div>
+        </div>
+        <div className={ classes.products }>
+          <Typography className={ classes.heading } variant={ 'h6'}>Github</Typography>
+          <div  className={ classes.link } onClick={()=> window.open("https://github.com/keep3r-network", "_blank")} >
+            <img alt="" src={ require('../../assets/github.svg') } height='24px' className={ classes.icon } />
+            <Typography variant={ 'h4'} >keep3r-network</Typography>
+          </div>
+        </div>
+        <div className={ classes.products }>
+          <Typography className={ classes.heading } variant={ 'h6'}>Registry</Typography>
+          <div  className={ classes.link } onClick={()=> window.open("https://docs.keep3r.network/registry", "_blank")} >
+            <DescriptionIcon height='15px' className={ classes.icon } />
+            <Typography variant={ 'h4'} >registry</Typography>
+          </div>
+        </div>
       </div>
     )
   }
