@@ -85,7 +85,9 @@ const styles = theme => ({
     justifyContent: 'flex-end',
     flex: 1,
     [theme.breakpoints.down('sm')]: {
-      flex: 1
+      flex: 1,
+      justifyContent: 'center',
+
     }
   },
   walletAddress: {
