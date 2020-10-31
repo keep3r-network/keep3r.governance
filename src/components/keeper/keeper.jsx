@@ -521,7 +521,7 @@ class Keeper extends Component {
               <Typography variant='h3' className={ classes.valueValue }> { moment(keeperAsset.bondings*1000).format("YYYY/MM/DD kk:mm") }</Typography>
             </div>
           }
-          { parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() < moment().valueOf() &&
+          { parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() < moment().valueOf() && keeperAsset.pendingBonds > 0 &&
             <div className={ classes.valueContainer }>
               <Typography variant='h4' className={ classes.valueTitle }>Activate</Typography>
               <Button
