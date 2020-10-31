@@ -18,6 +18,8 @@ import Store from "../../stores";
 import { colors } from '../../theme'
 
 import {
+  ETHERSCAN_URL,
+  ADDRESS,
   ERROR,
   START_LOADING,
   STOP_LOADING,
@@ -82,6 +84,13 @@ const styles = theme => ({
   },
   valueContainer: {
     marginBottom: '40px',
+  },
+  titleAddress: {
+    width: '100%',
+    cursor: 'pointer',
+    '&:hover': {
+      textDecoration: 'underline'
+    }
   },
   title: {
     width: '100%',
@@ -256,7 +265,7 @@ class Keeper extends Component {
         <div className={ classes.profileContainer }>
           <div className={ classes.titleHeading }>
             <div>
-              <Typography variant='h3' className={ classes.title }>{ keeperProfile.profileAddress }</Typography>
+              <Typography variant='h3' className={ classes.titleAddress } onClick={ () => { this.navigateEtherscan(keeperProfile.profileAddress) } }>{ keeperProfile.profileAddress }</Typography>
               { keeperProfile.isActive && <Typography variant='h4' className={ classes.subTitle }>First seen at { moment(keeperProfile.firstSeen*1000).format("YYYY/MM/DD kk:mm") }</Typography> }
               { !keeperProfile.isActive && <Typography variant='h4' className={ classes.subTitle }>Not an active Keep3r</Typography> }
             </div>
@@ -300,6 +309,10 @@ class Keeper extends Component {
         </div>
       </div>
     )
+  }
+
+  navigateEtherscan = (address) => {
+    window.open(ETHERSCAN_URL+ADDRESS+address)
   }
 
   onSlash = () => {
