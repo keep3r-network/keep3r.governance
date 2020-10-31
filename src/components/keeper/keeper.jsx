@@ -475,11 +475,10 @@ class Keeper extends Component {
 
     let state = 'Inactive'
 
-    if(parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() >= moment().valueOf()) {
-      state = 'Activating'
-    }
     if(keeperAsset.isActive) {
       state = 'Active'
+    } else if (parseInt(keeperAsset.bondings) > 0) {
+      state = 'Activating'
     }
 
     if(state === 'Inactive') {
@@ -584,7 +583,7 @@ class Keeper extends Component {
       keeperAsset,
     } = this.state
 
-    if(parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() >= moment().valueOf()) {
+    if(parseInt(keeperAsset.pendingBonds) > 0) {
       return (
         <div className={ classes.valueContainer }>
           <Typography variant='h4' className={ classes.valueTitle }>Bonds pending activation</Typography>
