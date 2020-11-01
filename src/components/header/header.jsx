@@ -33,8 +33,9 @@ const styles = theme => ({
     verticalAlign: 'top',
     width: '100%',
     display: 'flex',
+    marginBottom: '20px',
     [theme.breakpoints.down('sm')]: {
-      marginBottom: '40px'
+      marginBottom: '0px'
     }
   },
   headerV2: {
@@ -103,10 +104,21 @@ const styles = theme => ({
     },
     [theme.breakpoints.down('sm')]: {
       display: 'flex',
-      position: 'absolute',
-      top: '90px',
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      justifyContent: 'center',
+      zIndex: 100,
+      color: colors.white,
+      background: colors.blue,
+      padding: '20px',
+      borderRadius: '40px 40px 0 0',
       border: "1px solid "+colors.borderBlue,
-      background: colors.white
+      '&:hover': {
+        background: colors.white,
+        color: colors.black,
+      }    
     }
   },
   name: {
@@ -237,8 +249,8 @@ class Header extends Component {
           <div className={ classes.icon }>
             <img
               alt=""
-              src={ require('../../assets/logo.png') }
-              height={ '40px' }
+              src={ require('../../assets/logo.svg') }
+              height={ '37px' }
               onClick={ () => { this.nav('') } }
             />
             <Typography variant={ 'h3'} className={ classes.name } onClick={ () => { this.nav('') } }>keep3r.network</Typography>
@@ -275,8 +287,8 @@ class Header extends Component {
 
     return (
       <div className={ classes.accountDetailsSection }>
-        <Typography className={ classes.accountDetailsBalance } variant='h4'>{ (keeperAsset) ? (keeperAsset.balance + ' ' + keeperAsset.symbol) : '0' }</Typography>
-        <Typography className={ classes.accountDetailsBalance } onClick={ this.currencyClicked } variant='h4'>{ (rewardAsset) ? (rewardAsset.balance + ' ' + rewardAsset.symbol) : '0' }</Typography>
+        <Typography className={ classes.accountDetailsBalance } variant='h4'>{ (keeperAsset && keeperAsset.balance) ? keeperAsset.balance.toFixed(2) : '0' } { keeperAsset ? keeperAsset.symbol : '' }</Typography>
+        <Typography className={ classes.accountDetailsBalance } onClick={ this.currencyClicked } variant='h4'>{ (keeperAsset && keeperAsset.currentVotes && keeperAsset.currentVotes > 0) ? parseFloat(keeperAsset.currentVotes).toFixed(2) : '0' } { keeperAsset ? keeperAsset.voteSymbol : '' }</Typography>
         { width > 899 && <Typography className={ classes.accountDetailsAddress } onClick={ this.addressClicked } variant='h4'>{ address } <div className={ classes.connectedDot }></div></Typography> }
         { width <= 899 && <AccountCircleIcon className={ classes.accountIcon } onClick={ this.addressClicked } /> }
       </div>

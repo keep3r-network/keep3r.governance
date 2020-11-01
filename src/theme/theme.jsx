@@ -76,47 +76,73 @@ const iswapTheme =  {
       fontWeight: '600',
       WebkitFontSmoothing: "antialiased",
       MozOsxFontSmoothing: "grayscale",
-      lineHeight: 1.2
+      lineHeight: 1.2,
+      '@media (max-width: 899px)': {
+        fontSize: '34px',
+      },
     },
     h2: {
       fontSize: '36px',
       fontWeight: '600',
       WebkitFontSmoothing: "antialiased",
       MozOsxFontSmoothing: "grayscale",
-      lineHeight: 1.2
+      lineHeight: 1.2,
+      '@media (max-width: 899px)': {
+        fontSize: '34px',
+      },
     },
     h3: {
       fontSize: '24px',
       fontWeight: '600',
       WebkitFontSmoothing: "antialiased",
       MozOsxFontSmoothing: "grayscale",
-      lineHeight: 1.2
+      lineHeight: 1.2,
+      '@media (max-width: 899px)': {
+        fontSize: '20px',
+      },
     },
     h4: {
       fontSize: '16px',
       fontWeight: '600',
       WebkitFontSmoothing: "antialiased",
       MozOsxFontSmoothing: "grayscale",
-      lineHeight: 1.2
+      lineHeight: 1.2,
+      '@media (max-width: 899px)': {
+        fontSize: '14px',
+      },
     },
     h5: {
       fontSize: '14px',
       fontWeight: '600',
       WebkitFontSmoothing: "antialiased",
       MozOsxFontSmoothing: "grayscale",
-      lineHeight: 1.2
+      lineHeight: 1.2,
+      '@media (max-width: 899px)': {
+        fontSize: '12px',
+      },
+    },
+    h6: {
+      '@media (max-width: 899px)': {
+        fontSize: '18px',
+      },
     },
     body1: {
       fontSize: '16px',
       fontWeight: '300',
       WebkitFontSmoothing: "antialiased",
       MozOsxFontSmoothing: "grayscale",
+      '@media (max-width: 899px)': {
+        fontSize: '14px',
+      },
     },
     body2: {
       fontSize: '16px',
       fontWeight: '300',
       WebkitFontSmoothing: "antialiased",
       MozOsxFontSmoothing: "grayscale",
+      '@media (max-width: 899px)': {
+        fontSize: '14px',
+      },
     },
   },
   type: 'light',
@@ -269,7 +295,10 @@ const iswapTheme =  {
               color: '#000',
             },
           },
-        }
+        },
+        '@media (max-width: 899px)': {
+          minWidth:  '70px',
+        },
       }
     },
     MuiPaper: {

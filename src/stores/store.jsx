@@ -162,7 +162,9 @@ class Store {
         delegates: false,
         work: 0,
         workCompleted: 0,
-        isActive: false
+        isActive: false,
+        voteSymbol: 'KBD',
+        currentVotes: 0
       },
       jobs: [
 
@@ -1067,6 +1069,11 @@ class Store {
       keeperAsset.lastJob = await keeperContract.methods.lastJob(address).call({ })
 
       keeperAsset.isActive = await keeperContract.methods.keepers(address).call({ })
+
+      let currentVotes = await keeperContract.methods.getCurrentVotes(address).call({ })
+      currentVotes = currentVotes/10**keeperAsset.decimals
+      keeperAsset.currentVotes = currentVotes
+
       console.log(keeperAsset)
       return keeperAsset
     } catch(ex) {

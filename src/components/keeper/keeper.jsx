@@ -46,8 +46,8 @@ const styles = theme => ({
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    // marginTop: '40px',
-    background: colors.white,
+    paddingBottom: '60px',
+    // background: colors.white,
   },
   between: {
     width: '40px'
@@ -60,7 +60,7 @@ const styles = theme => ({
     alignItems: 'center',
     maxWidth: '900px',
     marginBottom: '20px',
-    background: colors.white,
+    // background: colors.white,
     [theme.breakpoints.down('sm')]: {
       flexWrap: 'wrap',
       justifyContent: 'center',
@@ -150,7 +150,6 @@ const styles = theme => ({
     flexDirection: 'column',
     background: colors.white,
     alignSelf: 'flex-start',
-    background: colors.white,
     [theme.breakpoints.down('sm')]: {
       marginLeft: '0px',
       maxWidth: '90vw',
@@ -201,7 +200,7 @@ const styles = theme => ({
     cursor: 'pointer'
   },
   actionInput: {
-    background: colors.white
+    // background: colors.white
   },
   jobContainer: {
     display: 'flex',
@@ -402,12 +401,9 @@ class Keeper extends Component {
             </div>
             <div className={ classes.valueContainer }>
               <Typography variant='h4' className={ classes.valueTitle }>Work Completed</Typography>
-              <Typography variant='h3' className={ classes.valueValue }>{ keeperAsset.workCompleted }</Typography>
+              <Typography variant='h3' className={ classes.valueValue }>{ keeperAsset.workCompleted ? keeperAsset.workCompleted.toFixed(4) : '0' }</Typography>
             </div>
-            <div className={ classes.valueContainer }>
-              <Typography variant='h4' className={ classes.valueTitle }>Bonds pending activation</Typography>
-              { this.renderPendingBonds() }
-            </div>
+            { this.renderPendingBonds() }
             {
               this.renderStatus()
             }
@@ -519,6 +515,25 @@ class Keeper extends Component {
     if(state === 'Active') {
       return (
         <React.Fragment>
+          { parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() >= moment().valueOf() &&
+            <div className={ classes.valueContainer }>
+              <Typography variant='h4' className={ classes.valueTitle }>Activatable at</Typography>
+              <Typography variant='h3' className={ classes.valueValue }> { moment(keeperAsset.bondings*1000).format("YYYY/MM/DD kk:mm") }</Typography>
+            </div>
+          }
+          { parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() < moment().valueOf() &&
+            <div className={ classes.valueContainer }>
+              <Typography variant='h4' className={ classes.valueTitle }>Activate</Typography>
+              <Button
+                variant='contained'
+                size='small'
+                color='primary'
+                onClick={ this.onActivate }
+              >
+                Activate Bonds
+              </Button>
+            </div>
+          }
           <div className={ classes.valueContainer }>
             <Typography variant='h4' className={ classes.valueTitle }>First Seen</Typography>
             <Typography variant='h3' className={ classes.valueValue }> { moment(keeperAsset.firstSeen*1000).format("YYYY/MM/DD kk:mm") }</Typography>
@@ -569,11 +584,19 @@ class Keeper extends Component {
       keeperAsset,
     } = this.state
 
-    return (
-      <div className={ classes.valueAction }>
-        <Typography variant='h3' className={ classes.valueValue }> { keeperAsset.pendingBonds ? keeperAsset.pendingBonds.toFixed(2) : '0.00' } { keeperAsset.symbol } </Typography>
-      </div>
-    )
+    if(parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() >= moment().valueOf()) {
+      return (
+        <div className={ classes.valueContainer }>
+          <Typography variant='h4' className={ classes.valueTitle }>Bonds pending activation</Typography>
+          <div className={ classes.valueAction }>
+            <Typography variant='h3' className={ classes.valueValue }> { keeperAsset.pendingBonds ? keeperAsset.pendingBonds.toFixed(2) : '0.00' } { keeperAsset.symbol } </Typography>
+          </div>
+        </div>
+      )
+    } else {
+      return null
+    }
+
   }
 
   renderBondAdd = () => {
