@@ -794,7 +794,7 @@ class Keeper extends Component {
 
     let error = false
 
-    if(removeBondAmount > keeperAsset.balance) {
+    if(removeBondAmount > keeperAsset.bonds) {
       error = true
       this.setState({ removeBondAmountError: 'Amount > bonded balance' })
     }
