@@ -48,25 +48,35 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     [theme.breakpoints.down('sm')]: {
-      justifyContent: 'space-between',
+      justifyContent: 'space-evenly',
       padding: '16px 24px'
     }
   },
   icon: {
     display: 'flex',
     alignItems: 'center',
-    flex: 1,
-    cursor: 'pointer'
+    cursor: 'pointer',
+  },
+  placeholderIcon: {
+    maxWidth: '0px',
+    height: '37px',
+    background: colors.red,
+    [theme.breakpoints.down('sm')]: {
+      minWidth: '25px'
+    }
   },
   links: {
-    display: 'flex'
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1
   },
   link: {
     padding: '12px 0px',
     margin: '0px 12px',
     cursor: 'pointer',
+    borderBottom: "3px solid "+colors.white,
     '&:hover': {
-      paddingBottom: '9px',
       borderBottom: "3px solid "+colors.borderBlue,
     },
   },
@@ -77,16 +87,14 @@ const styles = theme => ({
     padding: '12px 0px',
     margin: '0px 12px',
     cursor: 'pointer',
-    paddingBottom: '9px',
     borderBottom: "3px solid "+colors.borderBlue,
   },
   account: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    flex: 1,
     [theme.breakpoints.down('sm')]: {
-      flex: 1
+      justifyContent: 'center',
     }
   },
   walletAddress: {
@@ -301,6 +309,7 @@ class Header extends Component {
             { accountAnchorEl && this.renderAccount() }
             { currenciesAnchorEl && this.renderCurrencies() }
           </div>
+          <div class={classes.placeholderIcon}/>
         </div>
       </div>
     )
