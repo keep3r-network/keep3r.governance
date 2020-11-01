@@ -76,12 +76,14 @@ const styles = theme => ({
   },
   disclaimer: {
     padding: '12px',
-    border: '1px solid rgb(174, 174, 174)',
-    borderRadius: '10px',
+    // border: '1px solid rgb(174, 174, 174)',
+    // borderRadius: '10px',
     marginBottom: '24px',
-    background: colors.white,
+    background: colors.red,
+    color: colors.white,
+    minWidth: '100vw',
     [theme.breakpoints.down('sm')]: {
-      minWidth: '90vw',
+      minWidth: '100vw',
     }
   },
   keeperLayout: {
@@ -365,8 +367,8 @@ class Keeper extends Component {
     return (
       <div className={ classes.root }>
         <div className={ classes.intro }>
-          <div className={ classes.topButton }>
-          </div>
+          {/* <div className={ classes.topButton }>
+          </div> */}
           <Typography variant={'h5'} className={ classes.disclaimer }>This project is in beta. Use at your own risk.</Typography>
           <div className={ classes.topButton }>
             <TextField

@@ -33,6 +33,7 @@ const styles = theme => ({
     verticalAlign: 'top',
     width: '100%',
     display: 'flex',
+    flexWrap: 'wrap',
     marginBottom: '20px',
     [theme.breakpoints.down('sm')]: {
       marginBottom: '0px'
@@ -165,6 +166,15 @@ const styles = theme => ({
     border: '8px solid '+colors.green,
     marginLeft: '12px'
   },
+  disclaimer: {
+    padding: '12px',
+    display: 'flex',
+    justifyContent: 'center',
+    marginBottom: '24px',
+    background: colors.red,
+    color: colors.white,
+    minWidth: '100vw'
+  }
 });
 
 class Header extends Component {
@@ -272,6 +282,7 @@ class Header extends Component {
             { currenciesAnchorEl && this.renderCurrencies() }
           </div>
         </div>
+        <Typography variant={'h5'} className={ classes.disclaimer }>This project is in beta. Use at your own risk.</Typography>
       </div>
     )
   }
