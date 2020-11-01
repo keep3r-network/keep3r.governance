@@ -664,7 +664,7 @@ class Keeper extends Component {
     return (
       <div>
         <div className={ classes.inputContainer }>
-          <Typography variant='h6' className={ classes.balance } onClick={ () => { this.maxClicked('bondRemove') } }>{ keeperAsset.balance.toFixed(4) } { keeperAsset.symbol }</Typography>
+          <Typography variant='h6' className={ classes.balance } onClick={ () => { this.maxClicked('bondRemove') } }>{ keeperAsset.bonds.toFixed(4) } { keeperAsset.symbol }</Typography>
           <TextField
             fullwidth
             disabled={ loading }
