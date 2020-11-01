@@ -10,7 +10,7 @@ import IpfsRouter from 'ipfs-react-router'
 import interestTheme from './theme';
 import { colors } from './theme';
 
-// import Footer from './components/footer';
+import Footer from './components/footer';
 import Header from './components/header';
 import Loader from './components/loader';
 import SnackbarController from './components/snackbar';
@@ -200,6 +200,7 @@ class App extends Component {
               <Loader />
             }
           </div>
+          <Footer />
           <SnackbarController />
         </IpfsRouter>
       </MuiThemeProvider>

@@ -16,6 +16,8 @@ import Store from "../../stores";
 import { colors } from '../../theme'
 
 import {
+  ETHERSCAN_URL,
+  ADDRESS,
   ERROR,
   CONNECTION_CONNECTED,
   START_LOADING,
@@ -133,6 +135,10 @@ const styles = theme => ({
   },
   title: {
     width: '100%',
+    cursor: 'pointer',
+    '&:hover': {
+      textDecoration: 'underline'
+    }
   },
   subTitle: {
     width: '100%',
@@ -356,7 +362,7 @@ class Job extends Component {
         <div className={ classes.JobContainer }>
           <div className={ classes.titleHeading }>
             <div>
-              <Typography variant='h3' className={ classes.title }>{ (job && job.address) ? job.address : 'N/A' }</Typography>
+              <Typography variant='h3' className={ classes.title } onClick={ () => { this.navigateEtherscan(job.address) } }>{ (job && job.address) ? job.address : 'N/A' }</Typography>
               <Typography variant='h4' className={ classes.subTitle }> { (job && job.isJob ? ( job._name ? job._name : 'Job found') : 'Job not available') } </Typography>
             </div>
             <div>
@@ -525,6 +531,10 @@ class Job extends Component {
         </div>
       </div>
     )
+  }
+
+  navigateEtherscan = (address) => {
+    window.open(ETHERSCAN_URL+ADDRESS+address)
   }
 
   onChange = (event) => {
