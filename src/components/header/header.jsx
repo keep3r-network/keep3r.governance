@@ -131,21 +131,20 @@ const styles = theme => ({
     justifyContent: 'space-between',
     padding: '12px',
     [theme.breakpoints.down('sm')]: {
-      padding: '6px',
       display: 'flex',
       position: 'fixed',
       bottom: 0,
       left: 0,
       right: 0,
-      justifyContent: 'center',
+      justifyContent: 'space-between',
       zIndex: 100,
       color: colors.white,
       background: colors.blue,
-      padding: '20px',
+      padding: '20px 30px 20px 30px',
       borderRadius: '40px 40px 0 0',
       border: "1px solid "+colors.borderBlue,
       '&:active': {
-        background: colors.lightGray,
+        // background: colors.lightGray,
         color: colors.black,
       }   
     },
@@ -159,6 +158,14 @@ const styles = theme => ({
     alignItems: 'center',
     '&:hover': {
       textDecoration: 'underline'
+    },
+    [theme.breakpoints.down('sm')]: {
+      color: colors.black,
+      background: colors.white,
+      fontWeight: 'bold',
+      padding: '0px 12px',
+      height: '30px',
+      borderRadius: '30px'
     }
   },
   accountDetailsBalance: {
@@ -171,7 +178,16 @@ const styles = theme => ({
       textDecoration: 'underline'
     },
     [theme.breakpoints.down('sm')]: {
+      display: 'flex',
+      alignItems: 'center',
       padding: '0px 6px',
+      color: colors.black,
+      background: colors.white,
+      borderRight: '0',
+      fontWeight: 'bold',
+      // padding: '0px 12px',
+      height: '30px',
+      borderRadius: '5px'
     },
   },
   connectedDot: {
