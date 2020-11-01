@@ -32,26 +32,45 @@ const styles = theme => ({
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '40px'
+    paddingBottom: '60px',
   },
+
   intro: {
     width: '100%',
     position: 'relative',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    maxWidth: '900px'
+    maxWidth: '900px',
+    [theme.breakpoints.down('sm')]: {
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      marginBottom: '10px',
+      marginTop: '10px'
+    }
   },
   topButton: {
     width: '100px',
     marginBottom: '24px',
+    [theme.breakpoints.down('sm')]: {
+      minWidth: "90vw"
+    }
   },
-  disaclaimer: {
+  backButton: {
+    [theme.breakpoints.down('sm')]: {
+      minWidth: "90vw"
+    }
+  },
+  disclaimer: {
     padding: '12px',
     border: '1px solid rgb(174, 174, 174)',
     borderRadius: '10px',
     marginBottom: '24px',
     background: colors.white,
+    [theme.breakpoints.down('sm')]: {
+      minWidth: '90vw',
+      marginBottom: '0',
+    }
   },
   JobContainer: {
     display: 'flex',
@@ -62,6 +81,10 @@ const styles = theme => ({
     border: '1px solid '+colors.borderBlue,
     margin: '20px',
     background: colors.white,
+    [theme.breakpoints.down('sm')]: {
+      minWidth: '90vw',
+      marginTop: '0px',
+    }
   },
   field: {
     minWidth: '100%',
@@ -187,7 +210,7 @@ class JobCreation extends Component {
         <div className={ classes.intro }>
           <div className={ classes.topButton }>
             <Button
-              className={ classes.stakeButton }
+              className={ classes.backButton }
               variant="outlined"
               color="secondary"
               disabled={ loading }
@@ -196,7 +219,7 @@ class JobCreation extends Component {
               <Typography variant={ 'h4'}>Back</Typography>
             </Button>
           </div>
-          <Typography variant={'h5'} className={ classes.disaclaimer }>This project is in beta. Use at your own risk.</Typography>
+          <Typography variant={'h5'} className={ classes.disclaimer }>This project is in beta. Use at your own risk.</Typography>
           <div className={ classes.topButton }>
           </div>
         </div>
