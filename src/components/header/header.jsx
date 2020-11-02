@@ -94,7 +94,9 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'flex-end',
     [theme.breakpoints.down('sm')]: {
+      flex: 1,
       justifyContent: 'center',
+
     }
   },
   walletAddress: {
