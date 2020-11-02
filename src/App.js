@@ -48,6 +48,8 @@ class App extends Component {
   };
 
   componentWillMount() {
+    console.debug("HERE WE ARE")
+
     emitter.on(CONNECTION_CONNECTED, this.connectionConnected);
     emitter.on(TX_SUBMITTED, this.addTXObject);
     emitter.on(TX_RECEIPT, this.txReceipt);

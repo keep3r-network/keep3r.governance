@@ -387,7 +387,6 @@ class Proposal extends Component {
               <Typography variant={ 'h4'}>Back</Typography>
             </Button>
           </div>
-          <Typography variant={'h5'} className={ classes.disaclaimer }>This project is in beta. Use at your own risk.</Typography>
           <div className={ classes.topButton }>
           </div>
         </div>

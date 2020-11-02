@@ -48,25 +48,34 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     [theme.breakpoints.down('sm')]: {
-      justifyContent: 'space-between',
+      justifyContent: 'space-evenly',
       padding: '16px 24px'
     }
   },
   icon: {
     display: 'flex',
     alignItems: 'center',
-    flex: 1,
-    cursor: 'pointer'
+    cursor: 'pointer',
+  },
+  placeholderIcon: {
+    maxWidth: '0px',
+    height: '37px',
+    [theme.breakpoints.down('sm')]: {
+      minWidth: '25px'
+    }
   },
   links: {
-    display: 'flex'
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1
   },
   link: {
     padding: '12px 0px',
     margin: '0px 12px',
     cursor: 'pointer',
+    borderBottom: "3px solid "+colors.white,
     '&:hover': {
-      paddingBottom: '9px',
       borderBottom: "3px solid "+colors.borderBlue,
     },
   },
@@ -77,17 +86,12 @@ const styles = theme => ({
     padding: '12px 0px',
     margin: '0px 12px',
     cursor: 'pointer',
-    paddingBottom: '9px',
     borderBottom: "3px solid "+colors.borderBlue,
   },
   account: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    flex: 1,
-    [theme.breakpoints.down('sm')]: {
-      flex: 1
-    }
+    justifyContent: 'flex-end'
   },
   walletAddress: {
     padding: '12px',
@@ -106,15 +110,15 @@ const styles = theme => ({
       bottom: 0,
       left: 0,
       right: 0,
-      justifyContent: 'center',
       zIndex: 100,
+      justifyContent: 'center',
       color: colors.white,
       background: colors.blue,
       padding: '20px',
       borderRadius: '40px 40px 0 0',
       border: "1px solid "+colors.borderBlue,
       '&:hover': {
-        background: colors.white,
+        background: colors.lightGray,
         color: colors.black,
       }    
     }
@@ -131,7 +135,21 @@ const styles = theme => ({
     justifyContent: 'space-between',
     padding: '12px',
     [theme.breakpoints.down('sm')]: {
-      padding: '6px',
+      display: 'flex',
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      justifyContent: 'space-evenly',
+      zIndex: 100,
+      color: colors.white,
+      background: colors.blue,
+      padding: '20px 30px 20px 30px',
+      borderRadius: '40px 40px 0 0',
+      border: "1px solid "+colors.borderBlue,
+      '&:active': {
+        color: colors.black,
+      }   
     },
   },
   accountDetailsAddress: {
@@ -143,6 +161,14 @@ const styles = theme => ({
     alignItems: 'center',
     '&:hover': {
       textDecoration: 'underline'
+    },
+    [theme.breakpoints.down('sm')]: {
+      color: colors.black,
+      background: colors.white,
+      fontWeight: 'bold',
+      padding: '0px 12px',
+      height: '30px',
+      borderRadius: '30px'
     }
   },
   accountDetailsBalance: {
@@ -155,7 +181,16 @@ const styles = theme => ({
       textDecoration: 'underline'
     },
     [theme.breakpoints.down('sm')]: {
+      display: 'flex',
+      alignItems: 'center',
       padding: '0px 6px',
+      color: colors.black,
+      background: colors.white,
+      borderRight: '0',
+      fontWeight: 'bold',
+      // padding: '0px 12px',
+      height: '30px',
+      borderRadius: '5px'
     },
   },
   connectedDot: {
@@ -262,13 +297,14 @@ class Header extends Component {
               <Typography variant={ 'h4'} className={ classes.walletAddress } noWrap onClick={this.connectWallet} >
                 Connect wallet
               </Typography>
-          }
+            }
             { account.address &&
               this.renderAccountInformation()
             }
             { accountAnchorEl && this.renderAccount() }
             { currenciesAnchorEl && this.renderCurrencies() }
           </div>
+          <div class={classes.placeholderIcon}/>
         </div>
       </div>
     )
@@ -287,8 +323,7 @@ class Header extends Component {
       <div className={ classes.accountDetailsSection }>
         <Typography className={ classes.accountDetailsBalance } variant='h4'>{ (keeperAsset && keeperAsset.balance) ? keeperAsset.balance.toFixed(2) : '0' } { keeperAsset ? keeperAsset.symbol : '' }</Typography>
         <Typography className={ classes.accountDetailsBalance } onClick={ this.currencyClicked } variant='h4'>{ (keeperAsset && keeperAsset.currentVotes && keeperAsset.currentVotes > 0) ? parseFloat(keeperAsset.currentVotes).toFixed(2) : '0' } { keeperAsset ? keeperAsset.voteSymbol : '' }</Typography>
-        { width > 899 && <Typography className={ classes.accountDetailsAddress } onClick={ this.addressClicked } variant='h4'>{ address } <div className={ classes.connectedDot }></div></Typography> }
-        { width <= 899 && <AccountCircleIcon className={ classes.accountIcon } onClick={ this.addressClicked } /> }
+        <Typography className={ classes.accountDetailsAddress } onClick={ this.addressClicked } variant='h4'>{ address } <div className={ classes.connectedDot }></div></Typography>
       </div>
     )
   }
