@@ -46,7 +46,7 @@ const styles = theme => ({
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingBottom: '60px',
+    // paddingBottom: '60px',
     // background: colors.white,
   },
   between: {

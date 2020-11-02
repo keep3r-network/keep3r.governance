@@ -33,6 +33,7 @@ const styles = theme => ({
     verticalAlign: 'top',
     width: '100%',
     display: 'flex',
+    justifyContent: 'center',
     flexWrap: 'wrap',
     marginBottom: '20px',
     [theme.breakpoints.down('sm')]: {
@@ -121,7 +122,7 @@ const styles = theme => ({
       '&:hover': {
         background: colors.lightGray,
         color: colors.black,
-      }    
+      }
     }
   },
   name: {
@@ -150,7 +151,7 @@ const styles = theme => ({
       border: "1px solid "+colors.borderBlue,
       '&:active': {
         color: colors.black,
-      }   
+      }
     },
   },
   accountDetailsAddress: {
@@ -201,12 +202,11 @@ const styles = theme => ({
   },
   disclaimer: {
     padding: '12px',
-    display: 'flex',
-    justifyContent: 'center',
-    marginBottom: '24px',
-    background: colors.red,
-    color: colors.white,
-    minWidth: '100vw'
+    border: '1px solid rgb(174, 174, 174)',
+    borderRadius: '0.75rem',
+    lineHeight: '1.2',
+    background: colors.white,
+    marginTop: '40px'
   }
 });
 
@@ -314,7 +314,7 @@ class Header extends Component {
             { accountAnchorEl && this.renderAccount() }
             { currenciesAnchorEl && this.renderCurrencies() }
           </div>
-          <div class={classes.placeholderIcon}/>
+          <div className={classes.placeholderIcon}/>
         </div>
         <Typography variant={'h5'} className={ classes.disclaimer }>This project is in beta. Use at your own risk.</Typography>
       </div>

@@ -39,7 +39,6 @@ const styles = theme => ({
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '40px'
   },
   between: {
     width: '40px'
@@ -258,7 +257,6 @@ class Keeper extends Component {
               <Typography variant={ 'h4'}>Back</Typography>
             </Button>
           </div>
-          <Typography variant={'h5'} className={ classes.disaclaimer }>This project is in beta. Use at your own risk.</Typography>
           <div className={ classes.topButton }>
           </div>
         </div>

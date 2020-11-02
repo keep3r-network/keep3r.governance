@@ -1483,6 +1483,10 @@ class Store {
       jobProfile.credits = credits
       jobProfile.isJob = isJob
 
+      if(jobProfile._docs) {
+        jobProfile.fileContent = await this._getGithubFile(jobProfile._docs, address)
+      }
+
       return jobProfile
     } catch(ex) {
       console.log(ex)
@@ -1492,6 +1496,52 @@ class Store {
     }
   }
 
+  _getGithubFile = async (documentation, address) => {
+    if(documentation && documentation.includes('https://github.com')) {
+      try {
+
+        const documentationPieces = documentation.split('/')
+
+        const user = documentationPieces[3]
+        const repository = documentationPieces[4]
+        const branch = documentationPieces[6]
+        const newArr = documentationPieces.slice(7)
+
+        const file = newArr.join('/')
+
+        const url = `${config.githubAPI}${user}/${repository}/${branch}/${file}`
+
+        const rawCode = await rp(url);
+        if(rawCode) {
+          return rawCode
+        }
+      } catch(e) {
+        console.log(e)
+          return null
+      }
+    } else if (documentation && documentation.includes('https://etherscan.io/')) {
+      try {
+
+        const url = `${config.etherscanAPI}?module=contract&action=getsourcecode&address=${address}&apikey=${config.etherscanAPIKey}`
+
+        const rawCode = await rp(url);
+        if(rawCode) {
+          const jsonCode = JSON.parse(rawCode)
+          if(jsonCode.result && jsonCode.result.length > 0) {
+            return jsonCode.result[0].SourceCode
+          } else {
+            return jsonCode
+          }
+        }
+      } catch(e) {
+        console.log(e)
+          return null
+      }
+    } else {
+      return null
+    }
+
+  }
 
 
   addLiquidityToJob = async (payload) => {

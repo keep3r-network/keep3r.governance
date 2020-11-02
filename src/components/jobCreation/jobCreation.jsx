@@ -32,7 +32,6 @@ const styles = theme => ({
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '40px'
   },
   intro: {
     width: '100%',
@@ -196,7 +195,6 @@ class JobCreation extends Component {
               <Typography variant={ 'h4'}>Back</Typography>
             </Button>
           </div>
-          {/* <Typography variant={'h5'} className={ classes.disaclaimer }>This project is in beta. Use at your own risk.</Typography> */}
           <div className={ classes.topButton }>
           </div>
         </div>

@@ -45,7 +45,6 @@ const styles = theme => ({
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '40px'
   },
   intro: {
     width: '100%',
@@ -220,6 +219,14 @@ const styles = theme => ({
   },
   jobInfo: {
     marginBottom: '12px'
+  },
+  documentationPreview: {
+    minWidth: '100%',
+    minHeight: '600px'
+  },
+  jobPreviewContainer: {
+    width: '100%',
+    marginTop: '40px'
   }
 })
 
@@ -355,7 +362,7 @@ class Job extends Component {
               <Typography variant={ 'h4'}>Back</Typography>
             </Button>
           </div>
-          <Typography variant={'h5'} className={ classes.disclaimer }>This project is in beta. Use at your own risk.</Typography>
+          <div></div>
           <div className={ classes.topButton }>
           </div>
         </div>
@@ -392,10 +399,6 @@ class Job extends Component {
           {
             job && job.isJob &&
             <div className={ classes.jobMetadata }>
-              <div className={ classes.jobInfo }>
-                <Typography variant='h4'><a href={job._docs} target='_blank' className={ classes.textColor }>{ job._docs ? job._docs : 'Not set' }</a></Typography>
-                <Typography variant='h4' className={ classes.gray }>Documentation</Typography>
-              </div>
               <div className={ classes.jobInfo }>
                 <Typography variant='h4'>{ job._added ? moment(job._added*1000).format("YYYY/MM/DD kk:mm") : 'Not set' }</Typography>
                 <Typography variant='h4' className={ classes.gray }>Job Added</Typography>
@@ -528,9 +531,42 @@ class Job extends Component {
               </div>
             </div>
           }
+          { job && job.isJob &&
+            this.renderJobPreview()
+          }
         </div>
       </div>
     )
+  }
+
+  renderJobPreview = () => {
+    const {
+      job,
+    } = this.state
+
+    const {
+      classes
+    } = this.props
+
+    if(job._docs) {
+      return (<div className={ classes.jobPreviewContainer }>
+          <div className={ classes.jobInfo }>
+            <Typography variant='h4'><a href={job._docs} target='_blank' className={ classes.textColor }>{ job._docs ? job._docs : 'Not set' }</a></Typography>
+            <Typography variant='h4' className={ classes.gray }>Documentation</Typography>
+          </div>
+          { job.fileContent &&
+            <TextField
+              value={ job.fileContent }
+              multiline
+              fullWidth
+              variant='outlined'
+            />
+          }
+        </div>)
+    } else {
+      return null
+    }
+
   }
 
   navigateEtherscan = (address) => {
