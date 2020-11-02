@@ -367,7 +367,6 @@ class Keeper extends Component {
         <div className={ classes.intro }>
           <div className={ classes.topButton }>
           </div>
-          <Typography variant={'h5'} className={ classes.disclaimer }>This project is in beta. Use at your own risk.</Typography>
           <div className={ classes.topButton }>
             <TextField
               fullWidth
