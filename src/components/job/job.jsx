@@ -129,7 +129,7 @@ const styles = theme => ({
     display: 'flex',
     width: '100%',
     justifyContent: 'space-between',
-    marginBottom: '40px',
+    marginBottom: '52px',
     alignItems: 'center',
   },
   title: {
@@ -222,11 +222,9 @@ const styles = theme => ({
   },
   documentationPreview: {
     minWidth: '100%',
-    minHeight: '600px'
   },
   jobPreviewContainer: {
     width: '100%',
-    marginTop: '40px'
   }
 })
 
@@ -409,7 +407,7 @@ class Job extends Component {
               </div>
             </div>
           }
-          {
+          { /*
             job && job.isJob &&
             <div className={ classes.liquidityContainer }>
               <div className={ classes.field }>
@@ -496,8 +494,8 @@ class Job extends Component {
                 </div>
               </div>
             </div>
-          }
-          {
+          */}
+          { /*
             job && job.isJob &&
             <div className={ classes.liquidityContainer }>
               <div className={ classes.field }>
@@ -530,7 +528,7 @@ class Job extends Component {
                 </div>
               </div>
             </div>
-          }
+          */ }
           { job && job.isJob &&
             this.renderJobPreview()
           }
