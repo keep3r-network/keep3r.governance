@@ -60,7 +60,6 @@ const styles = theme => ({
   placeholderIcon: {
     maxWidth: '0px',
     height: '37px',
-    background: colors.red,
     [theme.breakpoints.down('sm')]: {
       minWidth: '25px'
     }
@@ -92,12 +91,7 @@ const styles = theme => ({
   account: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    [theme.breakpoints.down('sm')]: {
-      flex: 1,
-      justifyContent: 'center',
-
-    }
+    justifyContent: 'flex-end'
   },
   walletAddress: {
     padding: '12px',
@@ -116,8 +110,8 @@ const styles = theme => ({
       bottom: 0,
       left: 0,
       right: 0,
-      justifyContent: 'center',
       zIndex: 100,
+      justifyContent: 'center',
       color: colors.white,
       background: colors.blue,
       padding: '20px',
@@ -146,7 +140,7 @@ const styles = theme => ({
       bottom: 0,
       left: 0,
       right: 0,
-      justifyContent: 'space-between',
+      justifyContent: 'space-evenly',
       zIndex: 100,
       color: colors.white,
       background: colors.blue,
@@ -154,7 +148,6 @@ const styles = theme => ({
       borderRadius: '40px 40px 0 0',
       border: "1px solid "+colors.borderBlue,
       '&:active': {
-        // background: colors.lightGray,
         color: colors.black,
       }   
     },
@@ -330,8 +323,7 @@ class Header extends Component {
       <div className={ classes.accountDetailsSection }>
         <Typography className={ classes.accountDetailsBalance } variant='h4'>{ (keeperAsset && keeperAsset.balance) ? keeperAsset.balance.toFixed(2) : '0' } { keeperAsset ? keeperAsset.symbol : '' }</Typography>
         <Typography className={ classes.accountDetailsBalance } onClick={ this.currencyClicked } variant='h4'>{ (keeperAsset && keeperAsset.currentVotes && keeperAsset.currentVotes > 0) ? parseFloat(keeperAsset.currentVotes).toFixed(2) : '0' } { keeperAsset ? keeperAsset.voteSymbol : '' }</Typography>
-        { width > 899 && <Typography className={ classes.accountDetailsAddress } onClick={ this.addressClicked } variant='h4'>{ address } <div className={ classes.connectedDot }></div></Typography> }
-        { width <= 899 && <AccountCircleIcon className={ classes.accountIcon } onClick={ this.addressClicked } /> }
+        <Typography className={ classes.accountDetailsAddress } onClick={ this.addressClicked } variant='h4'>{ address } <div className={ classes.connectedDot }></div></Typography>
       </div>
     )
   }
