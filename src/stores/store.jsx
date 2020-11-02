@@ -1508,7 +1508,6 @@ class Store {
         const newArr = documentationPieces.slice(7)
 
         const file = newArr.join('/')
-
         const url = `${config.githubAPI}${user}/${repository}/${branch}/${file}`
 
         const rawCode = await rp(url);

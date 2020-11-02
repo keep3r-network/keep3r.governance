@@ -3,7 +3,7 @@ require('dotenv').config()
 const config = {
   infuraProvider: process.env.REACT_APP_PROVIDER,
   gasPriceURL: process.env.REACT_APP_GAS_PRICE_API,
-  githubAPI: process.env.REaCT_APP_GITHUB_API,
+  githubAPI: process.env.REACT_APP_GITHUB_API,
   etherscanAPI: process.env.REACT_APP_ETHERSCAN_API,
   etherscanAPIKey: process.env.REACT_APP_ETHERSCAN_KEY,
 
