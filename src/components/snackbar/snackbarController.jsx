@@ -9,6 +9,9 @@ import {
   SNACKBAR_TRANSACTION_HASH,
   SNACKBAR_TRANSACTION_RECEIPT,
   SNACKBAR_TRANSACTION_CONFIRMED,
+  TX_SUBMITTED,
+  TX_RECEIPT,
+  TX_CONFIRMED,
 } from '../../constants'
 
 import Store from "../../stores";
@@ -38,6 +41,10 @@ class SnackbarController extends Component {
     emitter.on(SNACKBAR_TRANSACTION_HASH, this.showHash);
     emitter.on(SNACKBAR_TRANSACTION_RECEIPT, this.showReceipt);
     emitter.on(SNACKBAR_TRANSACTION_CONFIRMED, this.showConfirmed);
+
+    emitter.on(TX_SUBMITTED, this.showHash);
+    emitter.on(TX_RECEIPT, this.showReceipt);
+    emitter.on(TX_CONFIRMED, this.showConfirmed);
   }
 
   componentWillUnmount() {
@@ -46,6 +53,10 @@ class SnackbarController extends Component {
     emitter.removeListener(SNACKBAR_TRANSACTION_HASH, this.showHash);
     emitter.removeListener(SNACKBAR_TRANSACTION_RECEIPT, this.showReceipt);
     emitter.removeListener(SNACKBAR_TRANSACTION_CONFIRMED, this.showConfirmed);
+
+    emitter.removeListener(TX_SUBMITTED, this.showHash);
+    emitter.removeListener(TX_RECEIPT, this.showReceipt);
+    emitter.removeListener(TX_CONFIRMED, this.showConfirmed);
   };
 
   showError = (error) => {

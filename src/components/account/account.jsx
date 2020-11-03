@@ -292,14 +292,14 @@ class Account extends Component {
             </ToggleButtonGroup>
           </div>
         }
-        { account.address &&
+        { /*account.address &&
           <div className={ classes.setting }>
             <Typography variant='h6' className={ classes.settingTitle }>Recent Transactions</Typography>
             <div className={ classes.transactionsRoot }>
               { this.renderTransactions() }
             </div>
           </div>
-        }
+        */ }
       </div>
     )
   };

@@ -46,6 +46,8 @@ import {
   REMOVE_BOND_RETURNED,
   ACTIVATE_BOND,
   ACTIVATE_BOND_RETURNED,
+  WITHDRAW_BOND,
+  WITHDRAW_BOND_RETURNED,
   ADD_JOB,
   ADD_JOB_RETURNED,
   GET_JOB_PROFILE,
@@ -145,7 +147,7 @@ class Store {
       keeperAsset: {
         address: config.keeperAddress,
         abi: KeeperABI,
-        symbol: 'KPR',
+        symbol: 'KP3R',
         name: 'Keep3r',
         decimals: 18,
         balance: 0,
@@ -234,6 +236,9 @@ class Store {
             break;
           case ACTIVATE_BOND:
             this.activateBond(payload);
+            break;
+          case WITHDRAW_BOND:
+            this.withdrawBond(payload);
             break;
           case GET_KEEPER_PROFILE:
             this.getKeeperProfile(payload);
@@ -1055,6 +1060,10 @@ class Store {
       pendingBonds = pendingBonds/10**keeperAsset.decimals
       keeperAsset.pendingBonds = pendingBonds
 
+      let partialUnbonding = await keeperContract.methods.partialUnbonding(address, keeperAsset.address).call({ })
+      partialUnbonding = partialUnbonding/10**keeperAsset.decimals
+      keeperAsset.partialUnbonding = partialUnbonding
+
       keeperAsset.bondings = await keeperContract.methods.bondings(address, keeperAsset.address).call({ })
       keeperAsset.unbondings = await keeperContract.methods.unbondings(address, keeperAsset.address).call({ })
 
@@ -1269,6 +1278,59 @@ class Store {
     const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
 
     keeperContract.methods.activate(keeperAsset.address).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+      .on('transactionHash', function(hash){
+        emitter.emit(TX_SUBMITTED, hash)
+        callback(null, hash)
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        if(confirmationNumber === 2) {
+          emitter.emit(TX_CONFIRMED, receipt.transactionHash)
+        }
+      })
+      .on('receipt', function(receipt){
+        emitter.emit(TX_RECEIPT, receipt.transactionHash)
+      })
+      .on('error', function(error) {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+      .catch((error) => {
+        if (!error.toString().includes("-32601")) {
+          if(error.message) {
+            return callback(error.message)
+          }
+          callback(error)
+        }
+      })
+  }
+
+  withdrawBond = (payload) => {
+    const account = store.getStore('account')
+    const { amount } = payload.content
+
+    this._callWithdraw(amount, account, (err, res) => {
+      if(err) {
+        emitter.emit(SNACKBAR_ERROR, err);
+        return emitter.emit(ERROR, WITHDRAW_BOND);
+      }
+
+      return emitter.emit(WITHDRAW_BOND_RETURNED, res)
+    })
+  }
+
+  _callWithdraw = async (amount, account, callback) => {
+    const web3 = await this._getWeb3Provider();
+    const keeperAsset = store.getStore('keeperAsset')
+
+    const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
+
+    let amountToSend = (amount*10**keeperAsset.decimals).toFixed(0);
+
+    keeperContract.methods.withdraw(keeperAsset.address, amountToSend).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
       .on('transactionHash', function(hash){
         emitter.emit(TX_SUBMITTED, hash)
         callback(null, hash)
@@ -1609,7 +1671,6 @@ class Store {
         }
       })
   }
-
 
   unbondLiquidityFromJob = async (payload) => {
     const account = store.getStore('account')

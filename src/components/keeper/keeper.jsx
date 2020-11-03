@@ -21,6 +21,7 @@ import {
   START_LOADING,
   STOP_LOADING,
   CONNECTION_CONNECTED,
+  ACCOUNT_CHANGED,
   GET_CURRENT_BLOCK,
   CURRENT_BLOCK_RETURNED,
   GET_KEEPER,
@@ -35,6 +36,8 @@ import {
   REMOVE_BOND_RETURNED,
   ACTIVATE_BOND,
   ACTIVATE_BOND_RETURNED,
+  WITHDRAW_BOND,
+  WITHDRAW_BOND_RETURNED
 } from '../../constants'
 
 const styles = theme => ({
@@ -262,8 +265,11 @@ class Keeper extends Component {
     emitter.on(JOBS_RETURNED, this.jobsReturned);
     emitter.on(KEEPERS_RETURNED, this.keepersReturned);
     emitter.on(CONNECTION_CONNECTED, this.connectionConnected);
+    emitter.on(ACCOUNT_CHANGED, this.connectionConnected);
     emitter.on(ADD_BOND_RETURNED, this.addBondReturned);
+    emitter.on(REMOVE_BOND_RETURNED, this.removeBondReturned);
     emitter.on(ACTIVATE_BOND_RETURNED, this.activateBondReturned);
+    emitter.on(WITHDRAW_BOND_RETURNED, this.withdrawBondReturned);
     emitter.on(CURRENT_BLOCK_RETURNED, this.currentBlockReturned);
   };
 
@@ -273,8 +279,11 @@ class Keeper extends Component {
     emitter.removeListener(JOBS_RETURNED, this.jobsReturned);
     emitter.removeListener(KEEPERS_RETURNED, this.keepersReturned);
     emitter.removeListener(CONNECTION_CONNECTED, this.connectionConnected);
+    emitter.removeListener(ACCOUNT_CHANGED, this.connectionConnected);
     emitter.removeListener(ADD_BOND_RETURNED, this.addBondReturned);
+    emitter.removeListener(REMOVE_BOND_RETURNED, this.removeBondReturned);
     emitter.removeListener(ACTIVATE_BOND_RETURNED, this.activateBondReturned);
+    emitter.removeListener(WITHDRAW_BOND_RETURNED, this.withdrawBondReturned);
     emitter.removeListener(CURRENT_BLOCK_RETURNED, this.currentBlockReturned);
   };
 
@@ -329,7 +338,7 @@ class Keeper extends Component {
       loading: false,
       onBondRemove: false,
     })
-    emitter.emit(STOP_LOADING, ADD_BOND)
+    emitter.emit(STOP_LOADING, REMOVE_BOND)
   }
 
   activateBondReturned = () => {
@@ -337,6 +346,13 @@ class Keeper extends Component {
       loading: false,
     })
     emitter.emit(STOP_LOADING, ACTIVATE_BOND_RETURNED)
+  }
+
+  withdrawBondReturned = () => {
+    this.setState({
+      loading: false,
+    })
+    emitter.emit(STOP_LOADING, WITHDRAW_BOND)
   }
 
   currentBlockReturned = () => {
@@ -364,27 +380,6 @@ class Keeper extends Component {
 
     return (
       <div className={ classes.root }>
-        <div className={ classes.intro }>
-          <div className={ classes.topButton }>
-          </div>
-          <div className={ classes.topButton }>
-            <TextField
-              fullWidth
-              disabled={ loading }
-              className={ classes.actionInput }
-              id={ 'searchKeeper' }
-              value={ searchKeeper }
-              error={ searchKeeperError }
-              onChange={ this.onSearchChange }
-              placeholder="0x....."
-              variant="outlined"
-              onKeyDown= { this.onSearchKeyDown }
-              InputProps={{
-                endAdornment: <InputAdornment position="end" className={ classes.searchInputAdornment } onClick={ this.onSearch }><SearchIcon /></InputAdornment>,
-              }}
-            />
-          </div>
-        </div>
         <div className={ classes.keeperLayout }>
           <div className={ classes.profileContainer }>
             <Typography variant='h3' className={ classes.title }>Profile</Typography>
@@ -398,14 +393,13 @@ class Keeper extends Component {
               { onBond && this.renderBondAdd() }
               { onBondRemove && this.renderBondRemove() }
             </div>
-            <div className={ classes.valueContainer }>
-              <Typography variant='h4' className={ classes.valueTitle }>Work Completed</Typography>
-              <Typography variant='h3' className={ classes.valueValue }>{ keeperAsset.workCompleted ? keeperAsset.workCompleted.toFixed(4) : '0' }</Typography>
-            </div>
             { this.renderPendingBonds() }
-            {
-              this.renderStatus()
-            }
+            { this.renderActivateBonds() }
+            { this.renderPendingUnbonds() }
+            { this.renderWithdrawBonds() }
+            { this.renderWorkCompleted() }
+            { this.renderFirstSeen() }
+            { this.renderSearch() }
             { /* <div className={ classes.valueContainer }>
               <Typography variant='h4' className={ classes.valueTitle }> Delegated</Typography>
               <div className={ classes.valueAction }>
@@ -434,6 +428,32 @@ class Keeper extends Component {
             { this.renderJobs() }
           </div>
         </div>
+      </div>
+    )
+  }
+
+  renderSearch = () => {
+    const { classes } = this.props
+    const { loading, searchKeeper, searchKeeperError } = this.state
+
+    return (
+      <div className={ classes.valueContainer }>
+        <Typography variant='h4' className={ classes.valueTitle }>Find keep3r</Typography>
+        <TextField
+          fullWidth
+          disabled={ loading }
+          className={ classes.actionInput }
+          id={ 'searchKeeper' }
+          value={ searchKeeper }
+          error={ searchKeeperError }
+          onChange={ this.onSearchChange }
+          placeholder="0x....."
+          variant="outlined"
+          onKeyDown= { this.onSearchKeyDown }
+          InputProps={{
+            endAdornment: <InputAdornment position="end" className={ classes.searchInputAdornment } onClick={ this.onSearch }><SearchIcon /></InputAdornment>,
+          }}
+        />
       </div>
     )
   }
@@ -468,70 +488,13 @@ class Keeper extends Component {
     })
   }
 
-  renderStatus = () => {
+  renderFirstSeen = () => {
     const { classes } = this.props
     const { keeperAsset } = this.state
 
-    let state = 'Inactive'
-
     if(keeperAsset.isActive) {
-      state = 'Active'
-    } else if (parseInt(keeperAsset.bondings) > 0) {
-      state = 'Activating'
-    }
-
-    if(state === 'Inactive') {
-      return (<div></div>)
-    }
-
-    if(state === 'Activating') {
       return (
         <React.Fragment>
-          { parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() >= moment().valueOf() &&
-            <div className={ classes.valueContainer }>
-              <Typography variant='h4' className={ classes.valueTitle }>Activatable at</Typography>
-              <Typography variant='h3' className={ classes.valueValue }> { moment(keeperAsset.bondings*1000).format("YYYY/MM/DD kk:mm") }</Typography>
-            </div>
-          }
-          { parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() < moment().valueOf() &&
-            <div className={ classes.valueContainer }>
-              <Typography variant='h4' className={ classes.valueTitle }>Activate</Typography>
-              <Button
-                variant='contained'
-                size='small'
-                color='primary'
-                onClick={ this.onActivate }
-              >
-                Activate Bonds
-              </Button>
-            </div>
-          }
-        </React.Fragment>
-      )
-    }
-
-    if(state === 'Active') {
-      return (
-        <React.Fragment>
-          { parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() >= moment().valueOf() &&
-            <div className={ classes.valueContainer }>
-              <Typography variant='h4' className={ classes.valueTitle }>Activatable at</Typography>
-              <Typography variant='h3' className={ classes.valueValue }> { moment(keeperAsset.bondings*1000).format("YYYY/MM/DD kk:mm") }</Typography>
-            </div>
-          }
-          { parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() < moment().valueOf() && keeperAsset.pendingBonds > 0 &&
-            <div className={ classes.valueContainer }>
-              <Typography variant='h4' className={ classes.valueTitle }>Activate</Typography>
-              <Button
-                variant='contained'
-                size='small'
-                color='primary'
-                onClick={ this.onActivate }
-              >
-                Activate Bonds
-              </Button>
-            </div>
-          }
           <div className={ classes.valueContainer }>
             <Typography variant='h4' className={ classes.valueTitle }>First Seen</Typography>
             <Typography variant='h3' className={ classes.valueValue }> { moment(keeperAsset.firstSeen*1000).format("YYYY/MM/DD kk:mm") }</Typography>
@@ -542,7 +505,22 @@ class Keeper extends Component {
           </div>
         </React.Fragment>
       )
+    } else {
+      return null
     }
+  }
+
+  renderWorkCompleted = () => {
+    const { classes } = this.props
+    const { keeperAsset } = this.state
+
+    return (
+      <div className={ classes.valueContainer }>
+        <Typography variant='h4' className={ classes.valueTitle }>Work Completed</Typography>
+        <Typography variant='h3' className={ classes.valueValue }>{ keeperAsset.workCompleted ? keeperAsset.workCompleted.toFixed(4) : '0' }</Typography>
+      </div>
+    )
+
   }
 
   renderBond = () => {
@@ -561,7 +539,7 @@ class Keeper extends Component {
             color='primary'
             onClick={ this.onBondAdd }
           >
-            add
+            Bond
           </Button>
           <Button
             size='small'
@@ -569,7 +547,7 @@ class Keeper extends Component {
             color='primary'
             onClick={ this.onBondRemove }
           >
-            remove
+            Unbond
           </Button>
         </div>
       </div>
@@ -582,10 +560,12 @@ class Keeper extends Component {
       keeperAsset,
     } = this.state
 
-    if(parseInt(keeperAsset.pendingBonds) > 0) {
+    if(keeperAsset.isActive && keeperAsset.pendingBonds === 0) {
+      return null
+    } else if(parseInt(keeperAsset.bondings) > 0) {
       return (
         <div className={ classes.valueContainer }>
-          <Typography variant='h4' className={ classes.valueTitle }>Bonds pending activation</Typography>
+          <Typography variant='h4' className={ classes.valueTitle }>Bonds pending</Typography>
           <div className={ classes.valueAction }>
             <Typography variant='h3' className={ classes.valueValue }> { keeperAsset.pendingBonds ? keeperAsset.pendingBonds.toFixed(2) : '0.00' } { keeperAsset.symbol } </Typography>
           </div>
@@ -594,7 +574,125 @@ class Keeper extends Component {
     } else {
       return null
     }
+  }
 
+  renderActivateBonds = () => {
+    const { classes } = this.props
+    const {
+      keeperAsset,
+    } = this.state
+
+    if(keeperAsset.isActive && keeperAsset.pendingBonds === 0) {
+      return null
+    } else if(parseInt(keeperAsset.bondings) > 0 && moment(keeperAsset.bondings*1000).valueOf() < moment().valueOf()) {
+      return (
+        <div className={ classes.valueContainer }>
+          <Typography variant='h4' className={ classes.valueTitle }>Activate</Typography>
+          <Button
+            variant='contained'
+            size='small'
+            color='primary'
+            onClick={ this.onActivate }
+          >
+            Activate Bonds
+          </Button>
+        </div>
+      )
+    } else if (keeperAsset.bondings > 0) {
+      return (
+        <div className={ classes.valueContainer }>
+          <Typography variant='h4' className={ classes.valueTitle }>Activatable at</Typography>
+          <div className={ classes.valueAction }>
+            <Typography variant='h3' className={ classes.valueValue }> { moment(keeperAsset.bondings*1000).format("YYYY/MM/DD kk:mm") } </Typography>
+          </div>
+        </div>
+      )
+    }
+  }
+
+  renderPendingUnbonds = () => {
+    const { classes } = this.props
+    const {
+      keeperAsset,
+    } = this.state
+
+    if(parseInt(keeperAsset.unbondings) > 0) {
+      return (
+        <div className={ classes.valueContainer }>
+          <Typography variant='h4' className={ classes.valueTitle }>Unbonds pending</Typography>
+          <div className={ classes.valueAction }>
+            <Typography variant='h3' className={ classes.valueValue }> { keeperAsset.partialUnbonding ? keeperAsset.partialUnbonding.toFixed(2) : '0.00' } { keeperAsset.symbol } </Typography>
+          </div>
+        </div>
+      )
+    } else {
+      return null
+    }
+  }
+
+  renderWithdrawBonds = () => {
+    const { classes } = this.props
+    const {
+      keeperAsset,
+      withdrawBondAmount,
+      withdrawBondAmountError,
+      loading
+    } = this.state
+
+    if(parseInt(keeperAsset.unbondings) > 0 && moment(keeperAsset.unbondings*1000).valueOf() < moment().valueOf()) {
+      return (
+        <div>
+          <div className={ classes.inputContainer }>
+            <Typography variant='h6' className={ classes.balance } onClick={ () => { this.maxClicked('bondWithdraw') } }>{ keeperAsset.partialUnbonding.toFixed(4) } { keeperAsset.symbol }</Typography>
+            <TextField
+              fullwidth
+              disabled={ loading }
+              id='withdrawBondAmount'
+              variant='outlined'
+              color='primary'
+              className={ classes.textField }
+              placeholder='Amount to withdraw'
+              value={ withdrawBondAmount }
+              error={ withdrawBondAmountError }
+              onChange={ this.onChange }
+              InputProps={{
+                className: classes.inputField,
+                startAdornment: <InputAdornment position="start" className={ classes.inputAdornment }>
+                  <img src={ require('../../assets/tokens/'+keeperAsset.logo) } width="30px" alt="" />
+                </InputAdornment>
+              }}
+            />
+          </div>
+          <div className={ classes.valueActionButtons }>
+            <Button
+              variant='text'
+              size='small'
+              color='primary'
+              onClick={ this.onBondAddClose }
+            >
+              cancel
+            </Button>
+            <Button
+              variant='contained'
+              size='small'
+              color='primary'
+              onClick={ this.onBond }
+            >
+              withdraw
+            </Button>
+          </div>
+        </div>
+      )
+    } else if (keeperAsset.unbondings > 0) {
+      return (
+        <div className={ classes.valueContainer }>
+          <Typography variant='h4' className={ classes.valueTitle }>Withdrawable at</Typography>
+          <div className={ classes.valueAction }>
+            <Typography variant='h3' className={ classes.valueValue }> { moment(keeperAsset.unbondings*1000).format("YYYY/MM/DD kk:mm") } </Typography>
+          </div>
+        </div>
+      )
+    }
   }
 
   renderBondAdd = () => {
@@ -644,7 +742,7 @@ class Keeper extends Component {
             color='primary'
             onClick={ this.onBond }
           >
-            add
+            bond
           </Button>
         </div>
       </div>
@@ -698,7 +796,7 @@ class Keeper extends Component {
             color='primary'
             onClick={ this.onCallBondRemove }
           >
-            remove
+            unbond
           </Button>
         </div>
       </div>
@@ -716,6 +814,9 @@ class Keeper extends Component {
         break;
       case 'bondRemove':
         this.setState({ removeBondAmount: keeperAsset.bonds })
+        break;
+      case 'bondWithdraw':
+        this.setState({ withdrawBondAmount: keeperAsset.bonds })
         break;
       default:
     }
