@@ -35,6 +35,9 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       justifyContent: 'flex-start',
       flexDirection: 'column'
+    },
+    [theme.breakpoints.down('sm')]: {
+      paddingBottom: '90px'
     }
   },
   heading: {
@@ -128,6 +131,13 @@ class Footer extends Component {
           <div  className={ classes.link } onClick={()=> window.open("https://docs.keep3r.network/registry", "_blank")} >
             <DescriptionIcon height='15px' className={ classes.icon } />
             <Typography variant={ 'h4'} >registry</Typography>
+          </div>
+        </div>
+        <div className={ classes.products }>
+          <Typography className={ classes.heading } variant={ 'h6'}>Stats</Typography>
+          <div  className={ classes.link } onClick={()=> window.open("https://keep3r.live", "_blank")} >
+            <BarChartIcon height='15px' className={ classes.icon } />
+            <Typography variant={ 'h4'} >keep3r.live</Typography>
           </div>
         </div>
       </div>
