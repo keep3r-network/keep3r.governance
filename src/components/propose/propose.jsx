@@ -26,11 +26,14 @@ const styles = theme => ({
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    maxWidth: '900px',
-    width: '100%',
+    width: '900px',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '40px'
+    marginTop: '40px',
+    [theme.breakpoints.down('md')]: {
+      maxWidth: '100vw',
+      padding: '0 20px 0 20px'
+    }
   },
   intro: {
     width: '100%',
@@ -56,10 +59,8 @@ const styles = theme => ({
     flexWrap: 'wrap',
     padding: '28px 30px',
     borderRadius: '10px',
-    minWidth: '900px',
-    border: '1px solid '+colors.borderBlue,
-    margin: '20px',
-    background: colors.white,
+    width: 'auto',
+    border: '1px solid '+colors.borderBlue
   },
   field: {
     minWidth: '100%',
@@ -151,8 +152,8 @@ class Propose extends Component {
               <Typography variant={ 'h4'}>Back</Typography>
             </Button>
           </div>
-          <div className={ classes.topButton }>
-          </div>
+          {/* <div className={ classes.topButton }>
+          </div> */}
         </div>
         <div className={ classes.proposalContainer }>
           <div className={ classes.field }>
