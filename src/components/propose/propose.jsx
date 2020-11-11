@@ -47,7 +47,7 @@ const styles = theme => ({
     width: '100px',
     marginBottom: '24px',
   },
-  disaclaimer: {
+  disclaimer: {
     padding: '12px',
     border: '1px solid rgb(174, 174, 174)',
     borderRadius: '10px',
