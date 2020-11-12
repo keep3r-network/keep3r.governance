@@ -155,8 +155,8 @@ class App extends Component {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            background: colors.background,
-            minHeight: '100vh'
+            minHeight: '100vh',
+            background: colors.background
           }}>
             <Header />
             <div style={{
