@@ -84,7 +84,8 @@ const styles = theme => ({
     flex: 1,
     flexWrap: 'wrap',
     [theme.breakpoints.up('sm')]: {
-      flexWrap: 'nowrap'
+      flexWrap: 'nowrap',
+      width: '100%'
     }
   },
   proposalContainer: {
