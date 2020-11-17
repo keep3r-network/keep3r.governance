@@ -642,27 +642,6 @@ class Keeper extends Component {
     if(parseInt(keeperAsset.unbondings) > 0 && moment(keeperAsset.unbondings*1000).valueOf() < moment().valueOf()) {
       return (
         <div>
-          <div className={ classes.inputContainer }>
-            <Typography variant='h6' className={ classes.balance } onClick={ () => { this.maxClicked('bondWithdraw') } }>{ keeperAsset.partialUnbonding.toFixed(4) } { keeperAsset.symbol }</Typography>
-            <TextField
-              fullwidth
-              disabled={ loading }
-              id='withdrawBondAmount'
-              variant='outlined'
-              color='primary'
-              className={ classes.textField }
-              placeholder='Amount to withdraw'
-              value={ withdrawBondAmount }
-              error={ withdrawBondAmountError }
-              onChange={ this.onChange }
-              InputProps={{
-                className: classes.inputField,
-                startAdornment: <InputAdornment position="start" className={ classes.inputAdornment }>
-                  <img src={ require('../../assets/tokens/'+keeperAsset.logo) } width="30px" alt="" />
-                </InputAdornment>
-              }}
-            />
-          </div>
           <div className={ classes.valueActionButtons }>
             <Button
               variant='text'
@@ -676,7 +655,7 @@ class Keeper extends Component {
               variant='contained'
               size='small'
               color='primary'
-              onClick={ this.onBond }
+              onClick={ this.onWithdraw }
             >
               withdraw
             </Button>
@@ -887,6 +866,24 @@ class Keeper extends Component {
       dispatcher.dispatch({ type: ADD_BOND, content: { amount: bondAmount } })
     }
   }
+
+  onWithdraw = () => {
+    this.setState({ bondAmountError: false });
+    const { keeperAsset, withdrawBondAmount } = this.state;
+
+    let error = false;
+
+    if (withdrawBondAmount > keeperAsset.balance) {
+      error = true;
+      this.setState({ bondAmountError: "Amount > balance" });
+    }
+
+    if (!error) {
+      emitter.emit(START_LOADING, WITHDRAW_BOND);
+      this.setState({ loading: true });
+      dispatcher.dispatch({ type: WITHDRAW_BOND});
+    }
+  };
 
   onCallBondRemove = () => {
     this.setState({ bondAmountError: false })

@@ -64,7 +64,6 @@ import {
   SLASH_RETURNED,
 } from '../constants';
 import Web3 from 'web3';
-
 import { injected } from "./connectors";
 import { ERC20ABI } from "./abi/erc20ABI";
 import { GovernanceABI } from './abi/governanceABI';
@@ -1310,9 +1309,8 @@ class Store {
 
   withdrawBond = (payload) => {
     const account = store.getStore('account')
-    const { amount } = payload.content
 
-    this._callWithdraw(amount, account, (err, res) => {
+    this._callWithdraw(account, (err, res) => {
       if(err) {
         emitter.emit(SNACKBAR_ERROR, err);
         return emitter.emit(ERROR, WITHDRAW_BOND);
@@ -1322,15 +1320,14 @@ class Store {
     })
   }
 
-  _callWithdraw = async (amount, account, callback) => {
+  _callWithdraw = async (account, callback) => {
     const web3 = await this._getWeb3Provider();
     const keeperAsset = store.getStore('keeperAsset')
 
     const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
 
-    let amountToSend = (amount*10**keeperAsset.decimals).toFixed(0);
 
-    keeperContract.methods.withdraw(keeperAsset.address, amountToSend).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+    keeperContract.methods.withdraw(keeperAsset.address).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
       .on('transactionHash', function(hash){
         emitter.emit(TX_SUBMITTED, hash)
         callback(null, hash)
