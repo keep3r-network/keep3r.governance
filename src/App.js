@@ -155,6 +155,7 @@ class App extends Component {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            minHeight: '100vh',
             background: colors.background
           }}>
             <Header />
@@ -198,8 +199,8 @@ class App extends Component {
             { loading.length > 0 &&
               <Loader />
             }
+            <Footer />
           </div>
-          <Footer />
           <SnackbarController />
         </IpfsRouter>
       </MuiThemeProvider>
