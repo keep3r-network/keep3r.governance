@@ -644,14 +644,6 @@ class Keeper extends Component {
         <div>
           <div className={ classes.valueActionButtons }>
             <Button
-              variant='text'
-              size='small'
-              color='primary'
-              onClick={ this.onBondAddClose }
-            >
-              cancel
-            </Button>
-            <Button
               variant='contained'
               size='small'
               color='primary'
@@ -868,21 +860,9 @@ class Keeper extends Component {
   }
 
   onWithdraw = () => {
-    this.setState({ bondAmountError: false });
-    const { keeperAsset, withdrawBondAmount } = this.state;
-
-    let error = false;
-
-    if (withdrawBondAmount > keeperAsset.balance) {
-      error = true;
-      this.setState({ bondAmountError: "Amount > balance" });
-    }
-
-    if (!error) {
       emitter.emit(START_LOADING, WITHDRAW_BOND);
       this.setState({ loading: true });
       dispatcher.dispatch({ type: WITHDRAW_BOND});
-    }
   };
 
   onCallBondRemove = () => {
