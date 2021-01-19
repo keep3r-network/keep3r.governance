@@ -5,8 +5,6 @@ import { withStyles } from '@material-ui/core/styles';
 import {
   Typography,
   Button,
-  TextField,
-  InputAdornment
 } from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
@@ -220,11 +218,7 @@ class Keeper extends Component {
     const { classes } = this.props;
     const {
       loading,
-      keeperProfile,
-      jobs,
-      keepers,
-      onBond,
-      currentBlock
+      keeperProfile
     } = this.state
 
     let state = 'Inactive'

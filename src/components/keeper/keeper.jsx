@@ -9,8 +9,6 @@ import {
   InputAdornment
 } from '@material-ui/core';
 
-import Loader from '../loader'
-
 import SearchIcon from '@material-ui/icons/Search';
 
 import Store from "../../stores";
@@ -305,9 +303,7 @@ class Keeper extends Component {
   };
 
   keeperProfileReturned = () => {
-    emitter.emit(STOP_LOADING, GET_KEEPERS)
-
-    console.log(store.getStore('keeperAsset'))
+    emitter.emit(STOP_LOADING, GET_KEEPER)
 
     this.setState({
       keeperAsset: store.getStore('keeperAsset'),
@@ -363,14 +359,9 @@ class Keeper extends Component {
   render() {
     const { classes } = this.props;
     const {
-      loading,
       keeperAsset,
-      keepers,
       onBond,
       onBondRemove,
-      currentBlock,
-      searchKeeper,
-      searchKeeperError,
     } = this.state
 
     // var delegates = 'Self';
@@ -634,9 +625,6 @@ class Keeper extends Component {
     const { classes } = this.props
     const {
       keeperAsset,
-      withdrawBondAmount,
-      withdrawBondAmountError,
-      loading
     } = this.state
 
     if(parseInt(keeperAsset.unbondings) > 0 && moment(keeperAsset.unbondings*1000).valueOf() < moment().valueOf()) {

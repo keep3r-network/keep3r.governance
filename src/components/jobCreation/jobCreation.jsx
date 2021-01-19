@@ -5,10 +5,8 @@ import {
   Typography,
   Button,
   TextField,
-  InputAdornment
+  MenuItem
 } from '@material-ui/core';
-
-import Loader from '../loader'
 
 import Store from "../../stores";
 import { colors } from '../../theme'
@@ -21,6 +19,8 @@ import {
   ADD_JOB_RETURNED,
   GET_BALANCES,
   BALANCES_RETURNED,
+  GET_LIQUIDITY_PAIRS,
+  LIQUIDITY_PAIRS_RETURNED,
 } from '../../constants'
 
 const styles = theme => ({
@@ -105,6 +105,14 @@ const styles = theme => ({
       marginBottom: '6px',
     }
   },
+  assetSelectMenu: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  assetSelectIcon: {
+    marginRight: '6px',
+    display: 'flex'
+  }
 })
 
 const emitter = Store.emitter
@@ -118,11 +126,16 @@ class JobCreation extends Component {
 
     const account = store.getStore('account')
     const keeperAsset = store.getStore('keeperAsset')
+    const liquidityPairs = store.getStore('liquidityPairs')
+    const selectedLiquidityPair = liquidityPairs.length > 0 ? liquidityPairs[0] : null
 
     this.state = {
       loading: false,
       account: account,
       keeperAsset: keeperAsset,
+      liquidityPairs: liquidityPairs,
+      liquidityPair: selectedLiquidityPair ? selectedLiquidityPair.symbol : '',
+      selectedLiquidityPair: selectedLiquidityPair,
       address: '',
       addressError: false,
       addLiquidityAmount: '',
@@ -136,19 +149,34 @@ class JobCreation extends Component {
     }
 
     dispatcher.dispatch({ type:GET_BALANCES, content: {} })
+    dispatcher.dispatch({ type: GET_LIQUIDITY_PAIRS, content: {} })
   }
 
   componentWillMount() {
     emitter.on(ERROR, this.errorReturned);
     emitter.on(ADD_JOB_RETURNED, this.addJobReturned)
     emitter.on(BALANCES_RETURNED, this.balancesReturned)
+    emitter.on(LIQUIDITY_PAIRS_RETURNED, this.liquidityPairsReturned)
   }
 
   componentWillUnmount() {
     emitter.removeListener(ERROR, this.errorReturned);
     emitter.removeListener(ADD_JOB_RETURNED, this.addJobReturned)
     emitter.removeListener(BALANCES_RETURNED, this.balancesReturned)
+    emitter.removeListener(LIQUIDITY_PAIRS_RETURNED, this.liquidityPairsReturned)
   };
+
+  liquidityPairsReturned = () => {
+    const liquidityPairs = store.getStore('liquidityPairs')
+    const selectedLiquidityPair = liquidityPairs.length > 0 ? liquidityPairs[0] : null
+    this.setState({
+      loading: false,
+      liquidityPairs: liquidityPairs,
+      liquidityPair: selectedLiquidityPair ? selectedLiquidityPair.symbol : '',
+      selectedLiquidityPair: selectedLiquidityPair
+    })
+    emitter.emit(STOP_LOADING, GET_LIQUIDITY_PAIRS)
+  }
 
   addJobReturned = () => {
     emitter.emit(STOP_LOADING, ADD_JOB)
@@ -167,7 +195,6 @@ class JobCreation extends Component {
   render() {
     const { classes } = this.props;
     const {
-      keeperAsset,
       loading,
       address,
       addressError,
@@ -179,6 +206,7 @@ class JobCreation extends Component {
       docsError,
       ipfs,
       ipfsError,
+      selectedLiquidityPair
     } = this.state
 
     return (
@@ -272,7 +300,7 @@ class JobCreation extends Component {
               <Typography variant='h4'>Provide liquidity</Typography>
             </div>
             <div className={ classes.inputContainer }>
-              <Typography variant='h6' className={ classes.balance } onClick={ () => { this.maxClicked('addLiquidityAmount') } }>{ keeperAsset.balance.toFixed(4) } { keeperAsset.symbol }</Typography>
+              <Typography variant='h6' className={ classes.balance } onClick={ () => { this.maxClicked('addLiquidityAmount') } }>{ selectedLiquidityPair ? selectedLiquidityPair.balance.toFixed(4) : '0.0000' } { selectedLiquidityPair ? selectedLiquidityPair.symbol : '' }</Typography>
               <TextField
                 fullwidth
                 disabled={ loading }
@@ -286,9 +314,7 @@ class JobCreation extends Component {
                 onChange={ this.onAmountChange }
                 InputProps={{
                   className: classes.inputField,
-                  startAdornment: <InputAdornment position="start" className={ classes.inputAdornment }>
-                    <img src={ require('../../assets/tokens/'+keeperAsset.logo) } width="30px" alt="" />
-                  </InputAdornment>
+                  startAdornment: this.renderAssetSelect()
                 }}
               />
             </div>
@@ -310,6 +336,71 @@ class JobCreation extends Component {
     )
   }
 
+  renderAssetSelect = () => {
+    const { loading, liquidityPairs, liquidityPair } = this.state
+    const { classes } = this.props
+
+    return (
+      <TextField
+        id={ 'liquidityPair' }
+        name={ 'liquidityPair' }
+        select
+        value={ liquidityPair }
+        onChange={ this.onAssetSelectChange }
+        SelectProps={{
+          native: false,
+        }}
+        fullWidth
+        disabled={ loading }
+        placeholder={ 'Select' }
+        className={ classes.assetSelectRoot }
+      >
+        { liquidityPairs ? liquidityPairs.map(this.renderAssetOption) : null }
+      </TextField>
+    )
+  }
+
+  renderAssetOption = (option) => {
+    const { classes } = this.props
+
+    return (
+      <MenuItem key={option.symbol} value={option.symbol} className={ classes.assetSelectMenu }>
+        <div className={ classes.assetSelectIcon }>
+          <img
+            alt=""
+            src={ this.getLogoForAsset(option) }
+            height="30px"
+          />
+        </div>
+        <div className={ classes.assetSelectIconName }>
+          <Typography variant='h4'>{ option.symbol }</Typography>
+        </div>
+      </MenuItem>
+    )
+  }
+
+  getLogoForAsset = (asset) => {
+    try {
+      return require('../../assets/tokens/'+asset.symbol+'-logo.png')
+    } catch {
+      return require('../../assets/tokens/unknown-logo.png')
+    }
+  }
+
+  onAssetSelectChange = (event) => {
+    let val = []
+    val[event.target.name] = event.target.value
+    this.setState(val)
+
+    const thePair = this.state.liquidityPairs.filter((pair) => {
+      return pair.symbol === event.target.value
+    })
+
+    this.setState({
+      selectedLiquidityPair: thePair[0]
+    })
+  }
+
   onChange = (event) => {
     let val = []
     val[event.target.id] = event.target.value
@@ -321,9 +412,9 @@ class JobCreation extends Component {
       return false
     }
 
-    const { keeperAsset } = this.state
-    if(event.target.id === 'addLiquidityAmount' && event.target.value > keeperAsset.balance) {
-      event.target.value = keeperAsset.balance
+    const { selectedLiquidityPair } = this.state
+    if(event.target.id === 'addLiquidityAmount' && event.target.value > selectedLiquidityPair.balance) {
+      event.target.value = selectedLiquidityPair.balance.toString()
     }
 
     let val = []
@@ -333,7 +424,7 @@ class JobCreation extends Component {
 
   onAddJob = () => {
     this.setState({ addressError: false, addLiquidityAmountError: false })
-    const { address, addLiquidityAmount, name, ipfs, docs } = this.state
+    const { address, addLiquidityAmount, name, ipfs, docs, selectedLiquidityPair } = this.state
 
     let error = false
 
@@ -345,18 +436,18 @@ class JobCreation extends Component {
     if(!error) {
       emitter.emit(START_LOADING, ADD_JOB)
       this.setState({ loading: true })
-      dispatcher.dispatch({ type: ADD_JOB, content: { address, addLiquidityAmount, name, ipfs, docs  } })
+      dispatcher.dispatch({ type: ADD_JOB, content: { address, addLiquidityAmount, name, ipfs, docs, selectedLiquidityPair } })
     }
   }
 
   maxClicked = (type) => {
     const {
-      keeperAsset
+      selectedLiquidityPair
     } = this.state
 
     switch (type) {
       case 'addLiquidityAmount':
-        this.setState({ addLiquidityAmount: keeperAsset.balance })
+        this.setState({ addLiquidityAmount: selectedLiquidityPair ? selectedLiquidityPair.balance.toString() : '' })
         break;
       default:
     }

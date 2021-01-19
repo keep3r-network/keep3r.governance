@@ -21,8 +21,6 @@ import {
 import Account from '../account';
 import Currencies from '../currencies';
 
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-
 import Store from "../../stores";
 const emitter = Store.emitter
 const store = Store.store
@@ -220,8 +218,7 @@ class Header extends Component {
       gasPrices: store.getStore('gasPrices'),
       rewardAsset: store.getStore('rewardAsset'),
       currenciesAnchorEl: null,
-      accountAnchorEl: null,
-      width: window.innerWidth,
+      accountAnchorEl: null
     }
   }
 
@@ -231,7 +228,6 @@ class Header extends Component {
     emitter.on(ACCOUNT_CHANGED, this.connectionConnected);
     emitter.on(BALANCES_RETURNED, this.balancesReturned);
     emitter.on(GAS_PRICES_RETURNED, this.gasPricesReturned);
-    window.addEventListener("resize", this.onResize)
   }
 
   componentWillUnmount() {
@@ -240,14 +236,6 @@ class Header extends Component {
     emitter.removeListener(ACCOUNT_CHANGED, this.connectionConnected);
     emitter.removeListener(BALANCES_RETURNED, this.balancesReturned);
     emitter.removeListener(GAS_PRICES_RETURNED, this.gasPricesReturned);
-    window.removeEventListener("resize", this.onResize)
-  }
-
-  onResize = (s) => {
-
-    this.setState({
-      width: window.innerWidth
-    })
   }
 
   connectionConnected = () => {
@@ -323,7 +311,7 @@ class Header extends Component {
 
   renderAccountInformation = () => {
     const { classes } = this.props
-    const { account, width, rewardAsset, keeperAsset } = this.state
+    const { account, keeperAsset } = this.state
 
     var address = null;
     if (account.address) {

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import {
   Typography,
-  Button,
 } from '@material-ui/core';
 import { colors } from '../../theme'
 
@@ -19,7 +18,6 @@ import {
   STAKE_RETURNED,
   GET_REWARD,
   REWARD_RETURNED,
-  GET_REWARDS_AVAILABLE,
   REWARDS_AVAILABLE_RETURNED,
 } from '../../constants'
 
@@ -260,7 +258,6 @@ class Currencies extends Component {
     const { classes, handleClose } = this.props;
     const {
       y,
-      loading,
       // mintAmount,
       // mintAmountError,
       // poolAmount,
@@ -272,7 +269,6 @@ class Currencies extends Component {
       keeperAsset,
       // poolAsset,
       // mintReceiveAmount,
-      rewardsAvailable
     } = this.state
 
     return (
