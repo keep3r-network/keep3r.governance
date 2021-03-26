@@ -268,25 +268,25 @@ class Account extends Component {
               <ToggleButton value={'slow'} className={ classes.gasFee }>
                 <div className={ classes.gasFee }>
                   <Typography variant={ 'h6' } className={ classes.gasFeeText }>Slow</Typography>
-                  <Typography variant={ 'body1' } className={ classes.gasFeeText }>({ gasPrices.slow.toFixed(0) } Gwei)</Typography>
+                  <Typography variant={ 'body1' } className={ classes.gasFeeText }>({ gasPrices.slow ? gasPrices.slow.toFixed(0) : '' } Gwei)</Typography>
                 </div>
               </ToggleButton>
               <ToggleButton value={'normal'} className={ classes.gasFee }>
                 <div className={ classes.gasFee }>
                   <Typography variant={ 'h6' } className={ classes.gasFeeText }>Medium</Typography>
-                  <Typography variant={ 'body1' } className={ classes.gasFeeText }>({ gasPrices.standard.toFixed(0) } Gwei)</Typography>
+                  <Typography variant={ 'body1' } className={ classes.gasFeeText }>({ gasPrices.standard ? gasPrices.standard.toFixed(0) : '' } Gwei)</Typography>
                 </div>
               </ToggleButton>
               <ToggleButton value={'fast'} className={ classes.gasFee }>
                 <div className={ classes.gasFee }>
                   <Typography variant={ 'h6' } className={ classes.gasFeeText }>Fast</Typography>
-                  <Typography variant={ 'body1' } className={ classes.gasFeeText }>({ gasPrices.fast.toFixed(0) } Gwei)</Typography>
+                  <Typography variant={ 'body1' } className={ classes.gasFeeText }>({ gasPrices.fast ? gasPrices.fast.toFixed(0) : '' } Gwei)</Typography>
                 </div>
               </ToggleButton>
               <ToggleButton value={'instant'} className={ classes.gasFee }>
                 <div className={ classes.gasFee }>
                   <Typography variant={ 'h6' } className={ classes.gasFeeText }>Instant</Typography>
-                  <Typography variant={ 'body1' } className={ classes.gasFeeText }>({ gasPrices.instant.toFixed(0) } Gwei)</Typography>
+                  <Typography variant={ 'body1' } className={ classes.gasFeeText }>({ gasPrices.instant ? gasPrices.instant.toFixed(0) : '' } Gwei)</Typography>
                 </div>
               </ToggleButton>
             </ToggleButtonGroup>
