@@ -1759,9 +1759,9 @@ class Store {
   removeLiquidityFromJob = async (payload) => {
     const account = store.getStore('account')
 
-    const { address } = payload.content
+    const { address, selectedLiquidityPair } = payload.content
 
-    this._callRemoveLiquidityFromJob(account, address, (err, res) => {
+    this._callRemoveLiquidityFromJob(account, address, selectedLiquidityPair, (err, res) => {
       if(err) {
         emitter.emit(SNACKBAR_ERROR, err);
         return emitter.emit(ERROR, REMOVE_LIQUIDITY_FROM_JOB);
@@ -1771,13 +1771,13 @@ class Store {
     })
   }
 
-  _callRemoveLiquidityFromJob = async (account, address, callback) => {
+  _callRemoveLiquidityFromJob = async (account, address, selectedLiquidityPair, callback) => {
     const web3 = await this._getWeb3Provider();
     const keeperAsset = store.getStore('keeperAsset')
 
     const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
 
-    keeperContract.methods.removeLiquidityFromJob(keeperAsset.address, address).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+    keeperContract.methods.removeLiquidityFromJob(selectedLiquidityPair.address, address).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
       .on('transactionHash', function(hash){
         emitter.emit(TX_SUBMITTED, hash)
         callback(null, hash)
