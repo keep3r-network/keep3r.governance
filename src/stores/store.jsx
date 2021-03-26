@@ -1777,7 +1777,7 @@ class Store {
 
     const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
 
-    keeperContract.methods.removeLiquidityFromJob(keeperAsset.address, address).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
+    keeperContract.methods.removeLiquidityFromJob(selectedLiquidityPair.address, address).send({ from: account.address, gasPrice: web3.utils.toWei(await this._getGasPrice(), 'gwei') })
       .on('transactionHash', function(hash){
         emitter.emit(TX_SUBMITTED, hash)
         callback(null, hash)
