@@ -1863,6 +1863,7 @@ class Store {
 
     const account = store.getStore('account')
     const web3 = await this._getWeb3Provider();
+    if(web3 == null) return;
     const keeperContract = new web3.eth.Contract(KeeperABI, config.keeperAddress)
 
     let notException = true
