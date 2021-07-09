@@ -149,7 +149,7 @@ class ContractAction extends Component {
 
   renderFunctions = (abi) => {
     const funcs = abi.filter((thing) => {
-      return thing.type === 'function' && thing.constant === false
+      return thing.type === 'function' && thing.constant !== true
     })
 
     return funcs.map((func) => {
