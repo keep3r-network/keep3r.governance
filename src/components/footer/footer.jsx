@@ -10,6 +10,8 @@ import DescriptionIcon from '@material-ui/icons/Description';
 
 import BarChartIcon from '@material-ui/icons/BarChart';
 
+import TwitterIcon from '@material-ui/icons/Twitter';
+
 const styles = theme => ({
   footer: {
     padding: '48px',
@@ -105,6 +107,12 @@ class Footer extends Component {
           <div  className={ classes.link } onClick={()=> window.open("https://docs.keep3r.network/", "_blank")} >
             <DescriptionIcon height='15px' className={ classes.icon } />
             <Typography variant={ 'h4'} >docs.keep3r.network</Typography>
+          </div>
+        <div className={ classes.products }>
+          <Typography className={ classes.heading } variant={ 'h6'}>Twitter</Typography>
+          <div  className={ classes.link } onClick={()=> window.open("https://twitter.com/thekeep3r", "_blank")} >
+            <TwitterIcon height='15px' className={ classes.icon } />
+            <Typography variant={ 'h4'} >thekeep3r.network</Typography>
           </div>
         </div>
         <div className={ classes.products }>
