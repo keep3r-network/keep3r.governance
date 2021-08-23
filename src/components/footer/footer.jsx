@@ -106,19 +106,20 @@ class Footer extends Component {
             <DescriptionIcon height='15px' className={ classes.icon } />
             <Typography variant={ 'h4'} >docs.keep3r.network</Typography>
           </div>
+          <div  className={ classes.link } onClick={()=> window.open("https://docs.keep3r.network/registry", "_blank")} >
+            <DescriptionIcon height='15px' className={ classes.icon } />
+            <Typography variant={ 'h4'} >registry</Typography>
+          </div>
         </div>
         <div className={ classes.products }>
-          <Typography className={ classes.heading } variant={ 'h6'}>Github</Typography>
+          <Typography className={ classes.heading } variant={ 'h6'}>Links</Typography>
           <div  className={ classes.link } onClick={()=> window.open("https://github.com/keep3r-network", "_blank")} >
             <img alt="" src={ require('../../assets/github.svg') } height='24px' className={ classes.icon } />
             <Typography variant={ 'h4'} >keep3r-network</Typography>
           </div>
-        </div>
-        <div className={ classes.products }>
-          <Typography className={ classes.heading } variant={ 'h6'}>Registry</Typography>
-          <div  className={ classes.link } onClick={()=> window.open("https://docs.keep3r.network/registry", "_blank")} >
-            <DescriptionIcon height='15px' className={ classes.icon } />
-            <Typography variant={ 'h4'} >registry</Typography>
+          <div  className={ classes.link } onClick={()=> window.open("https://twitter.com/thekeep3r", "_blank")} >
+            <img alt="" src={ require('../../assets/twitter.svg') } height='24px' className={ classes.icon } />
+            <Typography variant={ 'h4'} >@thekeep3r</Typography>
           </div>
         </div>
         <div className={ classes.products }>
