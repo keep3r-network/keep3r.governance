@@ -93,10 +93,9 @@ class Store {
       account: {},
       transactions: [],
       gasPrices: {
-        "slow":90,
-        "standard":90,
-        "fast":100,
-        "instant":130
+        standard: 90,
+        fast: 100,
+        instant: 130,
       },
       gasSpeed: 'fast',
       currentBlock: 0,
@@ -522,7 +521,7 @@ class Store {
 
     if(!gasSpeed) {
       gasSpeed = 'fast'
-      localStorage.getItem('governance-gas-speed', 'fast')
+      localStorage.setItem('governance-gas-speed', 'fast')
     }
 
     store.setStore({ gasPrices: gasPrices, gasSpeed: gasSpeed })
@@ -545,6 +544,11 @@ class Store {
 
   _getGasPrice = async () => {
     const gasSpeed = store.getStore('gasSpeed')
+
+    if(!gasSpeed) {
+      gasSpeed = 'fast'
+      localStorage.setItem('governance-gas-speed', 'fast')
+    }
 
     try {
       const url = config.gasPriceURL

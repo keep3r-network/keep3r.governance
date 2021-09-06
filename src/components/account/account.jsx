@@ -265,13 +265,7 @@ class Account extends Component {
           <div className={ classes.setting }>
             <Typography variant='h6' className={ classes.settingTitle }>Select Gas Setting</Typography>
             <ToggleButtonGroup color='secondary' value={ gasSpeed } onChange={this.handleTabChange} aria-label="type" exclusive size={ 'small' } fullwidth className={ classes.gasFeeToggle } >
-              <ToggleButton value={'slow'} className={ classes.gasFee }>
-                <div className={ classes.gasFee }>
-                  <Typography variant={ 'h6' } className={ classes.gasFeeText }>Slow</Typography>
-                  <Typography variant={ 'body1' } className={ classes.gasFeeText }>({ gasPrices.slow ? gasPrices.slow.toFixed(0) : '' } Gwei)</Typography>
-                </div>
-              </ToggleButton>
-              <ToggleButton value={'normal'} className={ classes.gasFee }>
+              <ToggleButton value={'standard'} className={ classes.gasFee }>
                 <div className={ classes.gasFee }>
                   <Typography variant={ 'h6' } className={ classes.gasFeeText }>Medium</Typography>
                   <Typography variant={ 'body1' } className={ classes.gasFeeText }>({ gasPrices.standard ? gasPrices.standard.toFixed(0) : '' } Gwei)</Typography>
