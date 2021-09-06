@@ -519,7 +519,7 @@ class Store {
     const gasPrices = await this._getGasPrices()
     let gasSpeed = localStorage.getItem('governance-gas-speed')
 
-    if(!gasSpeed) {
+    if(!gasSpeed || !['standard', 'fast', 'instant'].includes(gasSpeed)) {
       gasSpeed = 'fast'
       localStorage.setItem('governance-gas-speed', 'fast')
     }
@@ -545,7 +545,7 @@ class Store {
   _getGasPrice = async () => {
     const gasSpeed = store.getStore('gasSpeed')
 
-    if(!gasSpeed) {
+    if(!gasSpeed || !['standard', 'fast', 'instant'].includes(gasSpeed)) {
       gasSpeed = 'fast'
       localStorage.setItem('governance-gas-speed', 'fast')
     }
