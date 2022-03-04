@@ -23,6 +23,7 @@ import KeeperProfile from './components/keeperProfile';
 
 import JobCreation from './components/jobCreation';
 import Job from './components/job';
+import ShutdownNotice from './components/shutdownNotice'
 
 import {
   CONNECTION_CONNECTED,
@@ -44,7 +45,8 @@ const store = Store.store
 class App extends Component {
   state = {
     loading: [],
-    transactions: store.getStore('transactions')
+    transactions: store.getStore('transactions'),
+    shutdownNoticeOpen: true,
   };
 
   componentWillMount() {
@@ -144,6 +146,10 @@ class App extends Component {
     }
   }
 
+  closeShutdown = () => {
+    this.setState({ shutdownNoticeOpen: false })
+  }
+
   render() {
     const { loading } = this.state
 
@@ -202,6 +208,9 @@ class App extends Component {
             <Footer />
           </div>
           <SnackbarController />
+          { this.state.shutdownNoticeOpen &&
+            <ShutdownNotice close={ this.closeShutdown } />
+          }
         </IpfsRouter>
       </MuiThemeProvider>
     );
