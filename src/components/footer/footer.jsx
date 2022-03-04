@@ -121,6 +121,14 @@ class Footer extends Component {
             <img alt="" src={ require('../../assets/twitter.svg') } height='24px' className={ classes.icon } />
             <Typography variant={ 'h4'} >@thekeep3r</Typography>
           </div>
+          <div  className={ classes.link } onClick={()=> window.open("https://t.me/keep3r_official", "_blank")} >
+            <img alt="" src={ require('../../assets/telegram.svg') } height='24px' className={ classes.icon } />
+            <Typography variant={ 'h4'} >Telegram</Typography>
+          </div>
+          <div  className={ classes.link } onClick={()=> window.open("https://discord.gg/FSNfbEKDWV", "_blank")} >
+            <img alt="" src={ require('../../assets/discord.svg') } height='24px' className={ classes.icon } />
+            <Typography variant={ 'h4'} >Discord</Typography>
+          </div>
         </div>
         <div className={ classes.products }>
           <Typography className={ classes.heading } variant={ 'h6'}>Stats</Typography>
