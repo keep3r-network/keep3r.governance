@@ -1892,6 +1892,7 @@ class Store {
       try {
         const token0Address = await slpContract.methods.token0().call()
         const token1Address = await slpContract.methods.token1().call()
+        const lpName = await slpContract.methods.name().call()
 
         const erc20Contract0 = new web3.eth.Contract(ERC20ABI, token0Address)
         const erc20Contract1 = new web3.eth.Contract(ERC20ABI, token1Address)
@@ -1899,7 +1900,7 @@ class Store {
         const symbol0 = await erc20Contract0.methods.symbol().call()
         const symbol1 = await erc20Contract1.methods.symbol().call()
 
-        symbol = symbol0+'-'+symbol1
+        symbol = symbol0+'-'+symbol1+', '+lpName
 
       } catch(ex) {
         symbol = await slpContract.methods.symbol().call()
